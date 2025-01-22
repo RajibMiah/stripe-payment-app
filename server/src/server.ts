@@ -1,8 +1,24 @@
 import express, { Request, Response } from 'express';
-import userRouter from './router/user';
+import userRouter from './routers/user';
+import mongoose from 'mongoose';
+import dotenv from "dotenv"
+
+dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 5000;
+
+const mongoURI = process.env.DATABASE_MONGODB_URL
+
+
+if (!mongoURI) {
+  throw new Error('DATABASE_MONGODB_URL is not defined');
+}
+
+mongoose.connect(mongoURI)
+.then(() => console.log('MongoDB connected successfully'))
+.catch(err => console.error('MongoDB connection error:', err));
+
 
 // Middleware
 app.use(express.json());
