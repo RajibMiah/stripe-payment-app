@@ -1,5 +1,6 @@
 "use client";
 import Header from "@components/header";
+import LayoutLayer from "@components/layout-layer";
 // import type { Metadata } from "next";
 import "@styles/globals.css";
 import { useEffect, useState } from "react";
@@ -27,8 +28,10 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <Header />
-        <main>{children}</main>
+        <LayoutLayer>
+          <Header />
+          <main>{children}</main>
+        </LayoutLayer>
       </body>
     </html>
   );
