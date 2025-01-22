@@ -3,13 +3,14 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev --turbo",                             
+    "dev": "next dev --turbo",
     "dev:all": "concurrently --kill-others-on-fail \"next dev --turbo\" \"cd server && npm run dev\"",
-    "build": "next build && cd server && npm run build",      
-    "start": "next start && cd server && npm run start",    
-    "lint": "next lint"    
+    "build": "next build && cd server && npm run build",
+    "start": "next start && cd server && npm run start",
+    "lint": "next lint"
   },
   "dependencies": {
+    "@heroicons/react": "^2.2.0",
     "next": "15.1.5",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"
