@@ -1,6 +1,7 @@
 import { Response , NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 import {AuthenticatedRequest} from '../types/global';
+import { UserJwtToken } from '../types/user';
 
 export const authMiddleware = async(req: AuthenticatedRequest, res : Response, next:NextFunction): Promise<any> => {
     const token = req.header('Authorization');
@@ -10,7 +11,7 @@ export const authMiddleware = async(req: AuthenticatedRequest, res : Response, n
     try {
         const splitedToken = token.split(" ")[1];
         const decoded = jwt.verify(splitedToken, process.env.JWT_SECRET as string);
-        req.user = decoded as any;
+        req.user = decoded as UserJwtToken;
         next();
     } catch (err) {
         console.error('Something went wrong', err);
