@@ -2,7 +2,8 @@ import express, { Request, Response } from 'express';
 import userRouter from './routers/user';
 import mongoose from 'mongoose';
 import dotenv from "dotenv"
-
+import bodyParser  from "body-parser"
+import cors from "cors";
 dotenv.config();
 
 const app = express();
@@ -22,6 +23,8 @@ mongoose.connect(mongoURI)
 
 // Middleware
 app.use(express.json());
+app.use(bodyParser.json());
+app.use(cors());
 app.use("/api/user",userRouter);
 
 
