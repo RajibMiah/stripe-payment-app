@@ -54,7 +54,8 @@ export const userLoginController = async (req: Request, res: Response): Promise<
 
 export const userRegisterController = async (req: Request, res: Response):Promise<any> => {
     try {
-        console.log("req.body", req.body);  
+       
+        
         const { firstName, lastName, email, password } = req.body;
 
         if (!firstName || !lastName || !email || !password) {
@@ -77,7 +78,9 @@ export const userRegisterController = async (req: Request, res: Response):Promis
             lastName,
             email,
             password: hashedPassword,
-        }).save();
+        })
+
+        await newUser.save();
 
         const token = jwt.sign({ id: newUser._id }, process.env.JWT_SECRET as string, { expiresIn: "1h" });
 

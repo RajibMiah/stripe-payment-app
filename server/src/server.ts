@@ -1,5 +1,6 @@
 import express, { Request, Response } from 'express';
 import userRouter from './routers/user';
+import paymentRouter from './routers/payment';
 import mongoose from 'mongoose';
 import dotenv from "dotenv"
 import bodyParser  from "body-parser"
@@ -26,6 +27,7 @@ app.use(express.json());
 app.use(bodyParser.json());
 app.use(cors());
 app.use("/api/user",userRouter);
+app.use("/api/payment", paymentRouter)
 
 
 // Routes
