@@ -42,7 +42,7 @@ router.post("/register", async (req: Request, res: Response):Promise<any> => {
             return res.status(400).json({ message: "Email is already registered" });
         }
 
-        const hashedPassword = await bcrypt.hash(password, 10);
+        const hashedPassword = await bcrypt.hash(password, process.env.SALT_ROUNDS as unknown as number);
 
         const newUser = await new UserModel({
             firstName,
@@ -61,6 +61,30 @@ router.post("/register", async (req: Request, res: Response):Promise<any> => {
     }
 });
 
-router.post("/login", async(req:Request , res:Response)=>{});
+router.post("/login", async(req:Request , res:Response): Promise<any> =>{
+    try{
+        const {email , password} = req.body;
+
+        if(!email || !password){
+            return res.status(400).json({message: "All fields are required"});
+        }
+
+        const existingUser = await UserModel.findOne({email});
+
+        if(!existingUser){
+            return res.status(400).json({message: "Invalid credentials"});
+        }
+
+        const isPasswordCorrect = await bcrypt.compare(password , existingUser.password);
+
+        if(!isPasswordCorrect){
+            return res.status(400).json({message: "Invalid credentials"});
+        }
+
+        const token = jwt.sign({id: existingUser._id} , process.env.JWT_SECRET as string , {expiresIn: "1h"});
+
+        res.status(200).json({message: "Login successful", token});
+    }
+});
 
 export default router;
