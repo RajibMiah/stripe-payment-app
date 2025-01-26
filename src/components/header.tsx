@@ -1,6 +1,7 @@
 'use client';
 import { useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 
 interface HeaderProps {
     signupToogle: () => void;
@@ -20,7 +21,15 @@ const Header = ({ loginToggle, signupToogle }: HeaderProps) => {
                 <div className="flex justify-between items-center py-8 px-4 sm:px-20">
                     {/* Logo */}
                     <div>
-                        <div>LOGO</div>
+                        <div>
+                            <Image
+                                src="/logo_payment.wbmp"
+                                alt="Logo"
+                                width={50}
+                                height={50}
+                                className="h-12 w-auto rounded-full"
+                            />
+                        </div>
                     </div>
 
                     {/* Navigation for Large Screens */}
@@ -47,7 +56,7 @@ const Header = ({ loginToggle, signupToogle }: HeaderProps) => {
                             </span>
                         </button>
                         <button
-                            className="bg-blue-500 text-white px-4 py-2 rounded mouse-pointer"
+                            className="bg-purple-500 text-white px-4 py-2 rounded mouse-pointer"
                             onClick={signupToogle}
                         >
                             Sign Up
@@ -81,12 +90,12 @@ const Header = ({ loginToggle, signupToogle }: HeaderProps) => {
                         <Link href="/" passHref>
                             <span className="hover:text-gray-300">Contact</span>
                         </Link>
-                        <div>
+                        <button onClick={loginToggle}>
                             <span className="hover:text-gray-300">Login</span>
-                        </div>
+                        </button>
                         <button
                             className="bg-blue-500 text-white px-4 py-2 rounded mouse-pointer"
-                            onClick={toggleModal}
+                            onClick={signupToogle}
                         >
                             Sign Up
                         </button>
