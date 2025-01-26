@@ -1,9 +1,11 @@
-"use client";
-import Header from "@components/header";
-import LayoutLayer from "@components/layout-layer";
+'use client';
+import Header from '@components/header';
+import LayoutLayer from '@components/layout-layer';
 // import type { Metadata } from "next";
-import "@styles/globals.css";
-import { useEffect, useState } from "react";
+import '@styles/globals.css';
+import { useEffect, useState } from 'react';
+import { Provider } from 'react-redux';
+import store from 'redux/store';
 
 // export const metadata: Metadata = {
 //   title: "Create Next App",
@@ -11,28 +13,30 @@ import { useEffect, useState } from "react";
 // };
 
 export default function RootLayout({
-  children,
+    children,
 }: Readonly<{
-  children: React.ReactNode;
+    children: React.ReactNode;
 }>) {
-  const [isClient, setIsClient] = useState(false);
+    const [isClient, setIsClient] = useState(false);
 
-  useEffect(() => {
-    setIsClient(true);
-  }, []);
+    useEffect(() => {
+        setIsClient(true);
+    }, []);
 
-  if (!isClient) {
-    return null; // or a loading spinner
-  }
+    if (!isClient) {
+        return null; // or a loading spinner
+    }
 
-  return (
-    <html lang="en">
-      <body>
-        <LayoutLayer>
-          <Header />
-          <main>{children}</main>
-        </LayoutLayer>
-      </body>
-    </html>
-  );
+    return (
+        <html lang="en">
+            <body>
+                <Provider store={store}>
+                    <LayoutLayer>
+                        <Header />
+                        <main>{children}</main>
+                    </LayoutLayer>
+                </Provider>
+            </body>
+        </html>
+    );
 }

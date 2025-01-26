@@ -1,4 +1,4 @@
-import { Request, Response } from 'express';
+import { Response } from 'express';
 import Stripe from 'stripe';
 import dotenv from 'dotenv';
 import { AuthenticatedRequest } from '../types/global';
