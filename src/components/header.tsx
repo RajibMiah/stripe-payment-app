@@ -2,7 +2,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 
-const Header = () => {
+const Header = ({ isOpen, toggleModal }: any) => {
     const [isMenuOpen, setIsMenuOpen] = useState(false); // State to toggle the mobile menu
 
     const toggleMenu = () => {
@@ -39,9 +39,12 @@ const Header = () => {
                         <div>
                             <span className="hover:text-gray-300">Login</span>
                         </div>
-                        <div className="border border-solid border-white rounded-[6px] px-[0.6rem] py-[0.3rem] text-white bg-black">
-                            <span>Sign up</span>
-                        </div>
+                        <button
+                            className="bg-blue-500 text-white px-4 py-2 rounded mouse-pointer"
+                            onClick={toggleModal}
+                        >
+                            Sign Up
+                        </button>
                     </div>
 
                     {/* Hamburger Menu (Mobile and Tablet) */}
@@ -74,9 +77,12 @@ const Header = () => {
                         <div>
                             <span className="hover:text-gray-300">Login</span>
                         </div>
-                        <div className="border border-solid border-white rounded-[6px] px-[0.6rem] py-[0.3rem] text-white bg-black">
-                            <span>Sign up</span>
-                        </div>
+                        <button
+                            className="bg-blue-500 text-white px-4 py-2 rounded mouse-pointer"
+                            onClick={toggleModal}
+                        >
+                            Sign Up
+                        </button>
                     </div>
                 )}
             </div>

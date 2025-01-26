@@ -9,3 +9,14 @@ export interface User {
     name: string;
     email: string;
 }
+
+export interface AuthLoginPayload {
+    email: string;
+    password: string;
+}
+
+export interface AuthSignUpPayload {
+    name: string;
+    email: string;
+    password: string;
+}

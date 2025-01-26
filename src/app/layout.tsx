@@ -1,8 +1,10 @@
 'use client';
 import Header from '@components/header';
 import LayoutLayer from '@components/layout-layer';
+import Signup from '@components/signup';
 // import type { Metadata } from "next";
 import '@styles/globals.css';
+import { Sign } from 'crypto';
 import { useEffect, useState } from 'react';
 import { Provider } from 'react-redux';
 import store from 'redux/store';
@@ -18,7 +20,12 @@ export default function RootLayout({
     children: React.ReactNode;
 }>) {
     const [isClient, setIsClient] = useState(false);
+    const [isOpen, setIsOpen] = useState(false);
 
+    const toggleModal = () => {
+        console.log('clicked');
+        setIsOpen(!isOpen);
+    };
     useEffect(() => {
         setIsClient(true);
     }, []);
@@ -32,7 +39,8 @@ export default function RootLayout({
             <body>
                 <Provider store={store}>
                     <LayoutLayer>
-                        <Header />
+                        <Header isOpen={isOpen} toggleModal={toggleModal} />
+                        {isOpen && <Signup toggleModal={toggleModal} />}
                         <main>{children}</main>
                     </LayoutLayer>
                 </Provider>
