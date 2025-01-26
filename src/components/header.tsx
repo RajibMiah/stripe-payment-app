@@ -2,7 +2,12 @@
 import { useState } from 'react';
 import Link from 'next/link';
 
-const Header = ({ isOpen, toggleModal }: any) => {
+interface HeaderProps {
+    signupToogle: () => void;
+    loginToggle: () => void;
+}
+
+const Header = ({ loginToggle, signupToogle }: HeaderProps) => {
     const [isMenuOpen, setIsMenuOpen] = useState(false); // State to toggle the mobile menu
 
     const toggleMenu = () => {
@@ -36,12 +41,14 @@ const Header = ({ isOpen, toggleModal }: any) => {
 
                     {/* Auth Buttons for Large Screens */}
                     <div className="hidden 2xl:flex justify-center items-center gap-8">
-                        <div>
-                            <span className="hover:text-gray-300">Login</span>
-                        </div>
+                        <button className="mouse-pointer" onClick={loginToggle}>
+                            <span className="hover:text-gray-700 mouse-pointer">
+                                Login
+                            </span>
+                        </button>
                         <button
                             className="bg-blue-500 text-white px-4 py-2 rounded mouse-pointer"
-                            onClick={toggleModal}
+                            onClick={signupToogle}
                         >
                             Sign Up
                         </button>

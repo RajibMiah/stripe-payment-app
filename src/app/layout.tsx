@@ -1,10 +1,9 @@
 'use client';
 import Header from '@components/header';
 import LayoutLayer from '@components/layout-layer';
+import Login from '@components/login';
 import Signup from '@components/signup';
-// import type { Metadata } from "next";
 import '@styles/globals.css';
-import { Sign } from 'crypto';
 import { useEffect, useState } from 'react';
 import { Provider } from 'react-redux';
 import store from 'redux/store';
@@ -20,12 +19,17 @@ export default function RootLayout({
     children: React.ReactNode;
 }>) {
     const [isClient, setIsClient] = useState(false);
-    const [isOpen, setIsOpen] = useState(false);
+    const [isSignUpModelOpen, setSignUpModelOpen] = useState(false);
+    const [isLoginModelOpen, setIsLoginModelOpen] = useState(false);
 
-    const toggleModal = () => {
-        console.log('clicked');
-        setIsOpen(!isOpen);
+    const toggleLoginModal = () => {
+        setIsLoginModelOpen(!isLoginModelOpen);
     };
+
+    const toggleSignUpModal = () => {
+        setSignUpModelOpen(!isSignUpModelOpen);
+    };
+
     useEffect(() => {
         setIsClient(true);
     }, []);
@@ -39,8 +43,16 @@ export default function RootLayout({
             <body>
                 <Provider store={store}>
                     <LayoutLayer>
-                        <Header isOpen={isOpen} toggleModal={toggleModal} />
-                        {isOpen && <Signup toggleModal={toggleModal} />}
+                        <Header
+                            loginToggle={toggleLoginModal}
+                            signupToogle={toggleSignUpModal}
+                        />
+                        {isLoginModelOpen && (
+                            <Login toggleModal={toggleLoginModal} />
+                        )}
+                        {isSignUpModelOpen && (
+                            <Signup toggleModal={toggleSignUpModal} />
+                        )}
                         <main>{children}</main>
                     </LayoutLayer>
                 </Provider>

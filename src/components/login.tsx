@@ -1,14 +1,12 @@
 import { useEffect, useState } from 'react';
 
-const Signup = ({ toggleModal }: any) => {
+const Login = ({ toggleModal }: any) => {
     const [formData, setFormData] = useState({
-        firstName: '',
-        lastName: '',
         email: '',
         passwrod: '',
     });
 
-    const handleSignup = (e: any) => {
+    const handleLogin = (e: any) => {
         e.preventDefault();
         console.log(formData);
     };
@@ -28,34 +26,9 @@ const Signup = ({ toggleModal }: any) => {
         <div>
             <div className="fixed inset-0 flex items-center justify-center z-50">
                 <div className="bg-black opacity-50 absolute inset-0"></div>
-                <div className="min-w-128 bg-white p-8 rounded-lg shadow-lg z-10 ">
+                <div className="min-w-128 bg-white p-8 rounded-lg shadow-lg z-10 min-w-124">
                     <h2 className="text-2xl mb-4 text-center p-4">Sign Up</h2>
                     <form>
-                        <div className="flex mb-4 gap-4">
-                            <div className="flex flex-col">
-                                <label className=" text-gray-700">
-                                    First name
-                                </label>
-                                <input
-                                    type="text"
-                                    name="firstName"
-                                    onChange={handleFormChange}
-                                    className="w-50 px-3 py-3 border rounded required"
-                                />
-                            </div>
-
-                            <div className="flex flex-col">
-                                <label className=" text-gray-700">
-                                    Last name
-                                </label>
-                                <input
-                                    type="text"
-                                    name="lastName"
-                                    onChange={handleFormChange}
-                                    className="w-50 px-3 py-3 border rounded required"
-                                />
-                            </div>
-                        </div>
                         <div className="mb-4">
                             <label className="block text-gray-700">Email</label>
                             <input
@@ -82,9 +55,9 @@ const Signup = ({ toggleModal }: any) => {
                             <button
                                 type="submit"
                                 className="bg-blue-500 text-white px-4 py-2 rounded"
-                                onClick={handleSignup}
+                                onClick={handleLogin}
                             >
-                                Sign Up
+                                Login
                             </button>
                             <button
                                 type="button"
@@ -101,4 +74,4 @@ const Signup = ({ toggleModal }: any) => {
     );
 };
 
-export default Signup;
+export default Login;
