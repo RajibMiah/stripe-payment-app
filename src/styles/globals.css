@@ -5,6 +5,7 @@
 @layer base {
     body {
         @apply font-poppins;
+        overflow: auto !important;
     }
 }
 

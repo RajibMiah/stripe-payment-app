@@ -1,8 +1,23 @@
 import { CheckIcon } from '@heroicons/react/24/solid';
 
-const PlanCard = ({ title, price, description, features }: any) => {
+interface PlanCardProps {
+    title: string;
+
+    price: string;
+
+    description: string;
+
+    features: string[];
+}
+
+const PlanCard: React.FC<PlanCardProps> = ({
+    title,
+    price,
+    description,
+    features,
+}: never) => {
     return (
-        <div className="flex justify-center items-start flex-col border-2 border-purple-300 rounded-md w-72 sm:w-80 md:w-96 lg:w-[19rem] py-4 px-8">
+        <div className="flex justify-center items-start flex-col border-2 border-purple-300 rounded-md  lg:w-[19rem] py-4 px-8">
             <div className="text-base font-semibold py-2">
                 <span>{title}</span>
             </div>

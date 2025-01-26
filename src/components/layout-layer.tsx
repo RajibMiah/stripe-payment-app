@@ -1,17 +1,17 @@
-import React from "react";
+import React from 'react';
 
 const LayoutLayer = ({
-  children,
+    children,
 }: Readonly<{
-  children: React.ReactNode;
+    children: React.ReactNode;
 }>) => {
-  return (
-    <div className="relative bg-hero-pattern bg-cover bg-center h-full w-full">
-      <div className="relative lg:absolute top-[8%] left-[8%] right-[8%] bottom-[8%] rounded-md bg-white sm:w-full sm:h-auto lg:w-3/4 xl:w-2/3 mx-auto">
-        {children}
-      </div>
-    </div>
-  );
+    return (
+        <div className="flex justify-center items-center">
+            <div className="bg-white h-full  sm:w-full sm:m-10 md:w-3/4 md:m-32 rounded-md   ">
+                {children}
+            </div>
+        </div>
+    );
 };
 
 export default LayoutLayer;

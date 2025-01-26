@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 
-const Login = ({ toggleModal }: any) => {
+const Login: React.FC<any> = ({ toggleModal }) => {
     const [formData, setFormData] = useState({
         email: '',
         passwrod: '',

@@ -46,7 +46,7 @@ export default function RootLayout({
 
     return (
         <html lang="en" className={poppins.variable}>
-            <body className="font-poppins">
+            <body className=" absolute bg-hero-pattern bg-cover bg-center w-full font-poppins">
                 <Provider store={store}>
                     <LayoutLayer>
                         <Header

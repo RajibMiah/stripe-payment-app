@@ -16,7 +16,7 @@ const Header = ({ loginToggle, signupToogle }: HeaderProps) => {
     };
 
     return (
-        <header>
+        <header className="position-sticky top-0 z-50 w-full ">
             <div>
                 <div className="flex justify-between items-center py-8 px-4 sm:px-20">
                     {/* Logo */}
@@ -33,7 +33,7 @@ const Header = ({ loginToggle, signupToogle }: HeaderProps) => {
                     </div>
 
                     {/* Navigation for Large Screens */}
-                    <nav className="hidden 2xl:flex justify-between gap-16 ">
+                    <nav className="hidden lg:flex justify-between gap-16 ">
                         <Link href="/" passHref>
                             <span className="hover:text-gray-300">Home</span>
                         </Link>
@@ -49,7 +49,7 @@ const Header = ({ loginToggle, signupToogle }: HeaderProps) => {
                     </nav>
 
                     {/* Auth Buttons for Large Screens */}
-                    <div className="hidden 2xl:flex justify-center items-center gap-8">
+                    <div className="hidden lg:flex justify-center items-center gap-8">
                         <button className="mouse-pointer" onClick={loginToggle}>
                             <span className="hover:text-gray-700 mouse-pointer">
                                 Login
@@ -65,7 +65,7 @@ const Header = ({ loginToggle, signupToogle }: HeaderProps) => {
 
                     {/* Hamburger Menu (Mobile and Tablet) */}
                     <div
-                        className=" 2xl:hidden flex items-center"
+                        className=" lg:hidden flex items-center"
                         onClick={toggleMenu}
                     >
                         <button className="text-black">
