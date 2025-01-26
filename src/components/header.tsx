@@ -11,29 +11,30 @@ interface HeaderProps {
 const Header = ({ loginToggle, signupToogle }: HeaderProps) => {
     const [isMenuOpen, setIsMenuOpen] = useState(false); // State to toggle the mobile menu
 
+    // Toggle the mobile menu
     const toggleMenu = () => {
-        setIsMenuOpen(!isMenuOpen); // Toggle the menu state
+        setIsMenuOpen(!isMenuOpen);
     };
 
     return (
-        <header className="position-sticky top-0 z-50 w-full ">
+        <header className="position-sticky top-0 z-50 w-full">
+            {/* Main Container */}
             <div>
+                {/* Top Header Section */}
                 <div className="flex justify-between items-center py-8 px-4 sm:px-20">
                     {/* Logo */}
                     <div>
-                        <div>
-                            <Image
-                                src="/logo_payment.wbmp"
-                                alt="Logo"
-                                width={50}
-                                height={50}
-                                className="h-12 w-auto rounded-full"
-                            />
-                        </div>
+                        <Image
+                            src="/logo_payment.wbmp"
+                            alt="Logo"
+                            width={50}
+                            height={50}
+                            className="h-12 w-auto rounded-full"
+                        />
                     </div>
 
-                    {/* Navigation for Large Screens */}
-                    <nav className="hidden lg:flex justify-between gap-16 ">
+                    {/* Navigation (Large Screens) */}
+                    <nav className="hidden lg:flex justify-between gap-16">
                         <Link href="/" passHref>
                             <span className="hover:text-gray-300">Home</span>
                         </Link>
@@ -48,7 +49,7 @@ const Header = ({ loginToggle, signupToogle }: HeaderProps) => {
                         </Link>
                     </nav>
 
-                    {/* Auth Buttons for Large Screens */}
+                    {/* Auth Buttons (Large Screens) */}
                     <div className="hidden lg:flex justify-center items-center gap-8">
                         <button className="mouse-pointer" onClick={loginToggle}>
                             <span className="hover:text-gray-700 mouse-pointer">
@@ -63,19 +64,18 @@ const Header = ({ loginToggle, signupToogle }: HeaderProps) => {
                         </button>
                     </div>
 
-                    {/* Hamburger Menu (Mobile and Tablet) */}
+                    {/* Hamburger Menu Icon (Mobile and Tablet) */}
                     <div
-                        className=" lg:hidden flex items-center"
+                        className="lg:hidden flex items-center"
                         onClick={toggleMenu}
                     >
                         <button className="text-black">
-                            {/* Hamburger icon (three lines) */}
                             <span className="text-xl block">☰ MENU</span>
                         </button>
                     </div>
                 </div>
 
-                {/* Mobile Menu - Will be displayed when `isMenuOpen` is true */}
+                {/* Mobile Menu (Visible when `isMenuOpen` is true) */}
                 {isMenuOpen && (
                     <div className="2xl:hidden flex flex-col items-center gap-4 py-4 bg-black text-white">
                         <Link href="/" passHref>
