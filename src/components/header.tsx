@@ -17,11 +17,11 @@ const Header = ({ loginToggle, signupToogle }: HeaderProps) => {
     };
 
     return (
-        <header className="position-sticky top-0 z-50 w-full">
+        <header className="sticky top-0 z-50 w-full bg-white">
             {/* Main Container */}
             <div>
                 {/* Top Header Section */}
-                <div className="flex justify-between items-center py-8 px-4 sm:px-20 md:px-4">
+                <div className="flex justify-between items-center py-8 px-4 sm:px-8 md:px-12 lg:px-12 xl:px-24">
                     {/* Logo */}
                     <div>
                         <Image

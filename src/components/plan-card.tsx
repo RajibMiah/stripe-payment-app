@@ -14,7 +14,13 @@ const PlanCard: React.FC<PlanCardProps> = ({
     features,
 }) => {
     return (
-        <div className="flex justify-center items-start flex-col border-2 border-purple-300 rounded-md lg:w-[19rem] py-4 px-8 md:px-4">
+        <div
+            className="
+                flex justify-center items-start flex-col
+                border-2 border-purple-300 rounded-md
+                w-full sm:w-[18rem] md:w-[20rem] lg:w-[19rem]
+                py-4 sm:py-5 md:py-6 px-4 sm:px-6 md:px-8 lg:px-8"
+        >
             {/* Plan Title */}
             <div className="text-base font-semibold py-2">
                 <span>{title}</span>
