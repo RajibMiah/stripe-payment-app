@@ -8,7 +8,7 @@ This project serves as an example for testing and development purposes, showcasi
 ### Project Directory Structure
 Here’s an overview of the directory structure for the project:
 
-       ``` stripe-payment-app/
+        stripe-payment-app/
         ├── assets/                           
         │   └── images/
         │       └── home-page.png             
@@ -29,7 +29,7 @@ Here’s an overview of the directory structure for the project:
         ├── Dockerfile                        
         ├── README.md                         
         ├── package.json                      
-        └── .gitignore ```
+        └── .gitignore
         
 ## Features
 
@@ -95,8 +95,8 @@ Replace the values with your actual keys from Stripe.
 -3. Start the Application
     Once the containers are up and running, you can access the application at the following URLs:
     
-    ```Frontend: http://localhost:3000
-    Backend API: http://localhost:5000```
+    Frontend: http://localhost:3000
+    Backend API: http://localhost:5000
     
 You can now start using the app to test one-time payments, subscriptions, and trial subscriptions.
 
