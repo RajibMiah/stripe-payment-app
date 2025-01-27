@@ -20,7 +20,7 @@ This project serves as an example for testing and development purposes, showcasi
 
 Here is a preview of the homepage of the Stripe Payment App:
 
-![Home Page Screenshot](assets/images/home-page.png)
+![Home Page Screenshot](public/images/home-page.png)
 
 ## Tech Stack
 
