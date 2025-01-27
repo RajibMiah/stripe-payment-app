@@ -1,0 +1,40 @@
+# Ignore node_modules
+node_modules
+server/node_modules
+
+# Ignore logs
+*.log
+server/*.log
+
+# Ignore local environment files
+.env
+server/.env
+
+# Ignore Next.js build files
+.next
+out
+
+# Ignore temporary files
+*.tmp
+*.swp
+*.pid
+*.seed
+
+# Ignore Docker-related files (optional)
+Dockerfile
+docker-compose.yml
+
+# Ignore version control files
+.git
+.gitignore
+
+# Ignore IDE/editor config files
+.vscode
+.idea
+*.iml
+.DS_Store
+
+# Ignore any unnecessary files
+__pycache__
+dist
+coverage
