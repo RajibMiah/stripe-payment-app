@@ -1,3 +1,4 @@
+'use client';
 import { CheckIcon } from '@heroicons/react/24/solid';
 
 interface PlanCardProps {
@@ -5,6 +6,7 @@ interface PlanCardProps {
     price: string;
     description: string;
     features: string[];
+    handleOnClick: () => void;
 }
 
 const PlanCard: React.FC<PlanCardProps> = ({
@@ -12,6 +14,7 @@ const PlanCard: React.FC<PlanCardProps> = ({
     price,
     description,
     features,
+    handleOnClick,
 }) => {
     return (
         <div
@@ -35,7 +38,10 @@ const PlanCard: React.FC<PlanCardProps> = ({
 
                 {/* Get Started Button */}
                 <div className="flex items-center justify-center px-4">
-                    <button className="w-full bg-black text-white rounded-lg p-1 text-sm">
+                    <button
+                        onClick={handleOnClick}
+                        className="w-full bg-black text-white rounded-lg p-1 text-sm"
+                    >
                         Get Started
                     </button>
                 </div>

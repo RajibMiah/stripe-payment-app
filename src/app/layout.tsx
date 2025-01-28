@@ -7,7 +7,8 @@ import '@styles/globals.css';
 import { Poppins } from 'next/font/google';
 import { useEffect, useState } from 'react';
 import { Provider } from 'react-redux';
-import store from 'redux/store';
+import { PersistGate } from 'redux-persist/integration/react';
+import store, { persistor } from 'redux/store';
 
 // export const metadata: Metadata = {
 //   title: "Create Next App",
@@ -48,19 +49,21 @@ export default function RootLayout({
         <html lang="en" className={poppins.variable}>
             <body className=" absolute bg-hero-pattern bg-cover bg-center w-full font-poppins">
                 <Provider store={store}>
-                    <LayoutLayer>
-                        <Header
-                            loginToggle={toggleLoginModal}
-                            signupToogle={toggleSignUpModal}
-                        />
-                        {isLoginModelOpen && (
-                            <Login toggleModal={toggleLoginModal} />
-                        )}
-                        {isSignUpModelOpen && (
-                            <Signup toggleModal={toggleSignUpModal} />
-                        )}
-                        <main>{children}</main>
-                    </LayoutLayer>
+                    <PersistGate loading={null} persistor={persistor}>
+                        <LayoutLayer>
+                            <Header
+                                loginToggle={toggleLoginModal}
+                                signupToogle={toggleSignUpModal}
+                            />
+                            {isLoginModelOpen && (
+                                <Login toggleModal={toggleLoginModal} />
+                            )}
+                            {isSignUpModelOpen && (
+                                <Signup toggleModal={toggleSignUpModal} />
+                            )}
+                            <main>{children}</main>
+                        </LayoutLayer>
+                    </PersistGate>
                 </Provider>
             </body>
         </html>

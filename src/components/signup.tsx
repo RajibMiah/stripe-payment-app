@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { AppDispatch } from '@redux/store';
 import { signup } from '@redux/thunks/authThunk';

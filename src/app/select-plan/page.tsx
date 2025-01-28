@@ -1,6 +1,25 @@
+'use client';
+
 import PlanCard from '@components/plan-card';
+import { useDispatch } from 'react-redux';
+import { AppDispatch } from '@redux/store';
+import { oneTimePayment } from '@redux/thunks/checkoutThunk';
 
 const SelectPlan = () => {
+    const dispatch = useDispatch<AppDispatch>();
+
+    const onTimePayment = async () => {
+        try {
+            const res = await dispatch(oneTimePayment({}));
+            if (res.meta.requestStatus === 'rejected') {
+                alert('Payment failed: ' + res.payload);
+            } else {
+                console.log('Payment successfull', res);
+            }
+        } catch (err) {
+            alert('Payment failed: ' + err.message);
+        }
+    };
     return (
         <div className="flex justify-center h-full py-20 gap-10">
             <div className="w-full max-w-7xl">
@@ -35,6 +54,7 @@ const SelectPlan = () => {
                         <PlanCard
                             title="Basic"
                             price="$15 /month"
+                            handleOnClick={onTimePayment}
                             description="Perfect for growing business and freelancers. The Professional Plan takes your projects to the next level."
                             features={[
                                 'Advanced Analytics',
@@ -50,6 +70,7 @@ const SelectPlan = () => {
                         <PlanCard
                             title="Professional"
                             price="$30 /month"
+                            handleOnClick={onTimePayment}
                             description="Perfect for growing business and freelancers. The Professional Plan takes your projects to the next level."
                             features={[
                                 'Advanced Analytics',
@@ -63,8 +84,9 @@ const SelectPlan = () => {
                     {/* Business Plan Card */}
                     <div className="flex justify-center items-center">
                         <PlanCard
-                            title="Business"
+                            title="Free Trial"
                             price="$49 /month"
+                            handleOnClick={onTimePayment}
                             description="Perfect for growing business and freelancers. The Professional Plan takes your projects to the next level."
                             features={[
                                 'Advanced Analytics',
