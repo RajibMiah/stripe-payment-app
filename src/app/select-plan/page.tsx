@@ -1,25 +1,53 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 'use client';
 
 import PlanCard from '@components/plan-card';
 import { useDispatch } from 'react-redux';
 import { AppDispatch } from '@redux/store';
 import { oneTimePayment } from '@redux/thunks/checkoutThunk';
+import { loadStripe } from '@stripe/stripe-js';
+
+const stripePromise = loadStripe(
+    process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
+);
 
 const SelectPlan = () => {
     const dispatch = useDispatch<AppDispatch>();
 
-    const onTimePayment = async () => {
+    // Handles redirecting to Stripe checkout
+    const handleStripeRedirect = async (id: string) => {
+        console.log('Redirecting to checkout with session ID:', id);
+        const stripe = await stripePromise;
+
+        const { error } = await stripe.redirectToCheckout({
+            sessionId: id,
+        });
+
+        if (error) {
+            console.error('Error redirecting to checkout:', error);
+            alert(
+                'There was an error with the payment process. Please try again.'
+            );
+        }
+    };
+
+    // Handles payment submission
+    const onTimePayment = async (planId: string) => {
         try {
-            const res = await dispatch(oneTimePayment({}));
+            const res = await dispatch(oneTimePayment({ planId }));
+
             if (res.meta.requestStatus === 'rejected') {
                 alert('Payment failed: ' + res.payload);
             } else {
-                console.log('Payment successfull', res);
+                const { id } = res.payload;
+                handleStripeRedirect(id);
             }
-        } catch (err) {
+        } catch (err: any) {
+            console.error('Payment error:', err);
             alert('Payment failed: ' + err.message);
         }
     };
+
     return (
         <div className="flex justify-center h-full py-20 gap-10">
             <div className="w-full max-w-7xl">
@@ -54,8 +82,8 @@ const SelectPlan = () => {
                         <PlanCard
                             title="Basic"
                             price="$15 /month"
-                            handleOnClick={onTimePayment}
-                            description="Perfect for growing business and freelancers. The Professional Plan takes your projects to the next level."
+                            handleOnClick={() => onTimePayment('basic-plan')}
+                            description="Perfect for growing business and freelancers."
                             features={[
                                 'Advanced Analytics',
                                 'Client Collaboration Excellence',
@@ -70,8 +98,10 @@ const SelectPlan = () => {
                         <PlanCard
                             title="Professional"
                             price="$30 /month"
-                            handleOnClick={onTimePayment}
-                            description="Perfect for growing business and freelancers. The Professional Plan takes your projects to the next level."
+                            handleOnClick={() =>
+                                onTimePayment('professional-plan')
+                            }
+                            description="Perfect for growing businesses and freelancers."
                             features={[
                                 'Advanced Analytics',
                                 'Client Collaboration Excellence',
@@ -86,8 +116,8 @@ const SelectPlan = () => {
                         <PlanCard
                             title="Free Trial"
                             price="$49 /month"
-                            handleOnClick={onTimePayment}
-                            description="Perfect for growing business and freelancers. The Professional Plan takes your projects to the next level."
+                            handleOnClick={() => onTimePayment('free-trial')}
+                            description="Perfect for growing businesses and freelancers."
                             features={[
                                 'Advanced Analytics',
                                 'Client Collaboration Excellence',
