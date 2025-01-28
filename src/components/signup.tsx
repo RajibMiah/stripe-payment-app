@@ -6,7 +6,6 @@ import { signup } from '@redux/thunks/authThunk';
 interface SignupProps {
     toggleModal: () => void;
 }
-
 const Signup: React.FC<SignupProps> = ({ toggleModal }) => {
     const dispatch = useDispatch<AppDispatch>();
 
@@ -24,7 +23,16 @@ const Signup: React.FC<SignupProps> = ({ toggleModal }) => {
                 return alert('Please fill all fields');
             }
         }
-        dispatch(signup(formData));
+        try {
+            const res = await dispatch(signup(formData));
+            if (res.meta.requestStatus === 'rejected') {
+                alert('Signup failed: ' + res.payload);
+            } else {
+                alert('Signup successfull');
+            }
+        } catch (error) {
+            alert('Signup failed: ' + error.message);
+        }
     };
 
     const handleFormChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -33,10 +41,6 @@ const Signup: React.FC<SignupProps> = ({ toggleModal }) => {
             [e.target.name]: e.target.value,
         });
     };
-
-    useEffect(() => {
-        console.log(formData);
-    }, [formData]);
 
     return (
         <div>

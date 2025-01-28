@@ -1,7 +1,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState } from 'react';
+import { useDispatch } from 'react-redux';
+import { AppDispatch } from '@redux/store';
+import { login } from '@redux/thunks/authThunk';
 
 const Login: React.FC<any> = ({ toggleModal }) => {
+    const dispatch = useDispatch<AppDispatch>();
+
     const [formData, setFormData] = useState({
         email: '',
         password: '',
@@ -10,7 +15,21 @@ const Login: React.FC<any> = ({ toggleModal }) => {
     // Handle login form submission
     const handleLogin = async (e: any) => {
         e.preventDefault();
-        console.log(formData); // You can replace this with actual login logic
+        for (const key in formData) {
+            if (!formData[key]) {
+                return alert('Please fill all fields');
+            }
+        }
+        try {
+            const res = await dispatch(login(formData));
+            if (res.meta.requestStatus === 'rejected') {
+                alert('Login failed: ' + res.payload);
+            } else {
+                alert('Login successfull');
+            }
+        } catch (error) {
+            alert('Login failed: ' + error.message);
+        }
     };
 
     // Handle form input changes
@@ -20,11 +39,6 @@ const Login: React.FC<any> = ({ toggleModal }) => {
             [e.target.name]: e.target.value,
         });
     };
-
-    // Log form data whenever it changes
-    // useEffect(() => {
-    //     console.log(formData);
-    // }, [formData]);
 
     return (
         <div>
