@@ -1,10 +1,15 @@
 import { useEffect, useState } from 'react';
+import { useDispatch } from 'react-redux';
+import { AppDispatch } from '@redux/store';
+import { signup } from '@redux/thunks/authThunk';
 
 interface SignupProps {
     toggleModal: () => void;
 }
 
 const Signup: React.FC<SignupProps> = ({ toggleModal }) => {
+    const dispatch = useDispatch<AppDispatch>();
+
     const [formData, setFormData] = useState({
         firstName: '',
         lastName: '',
@@ -12,9 +17,14 @@ const Signup: React.FC<SignupProps> = ({ toggleModal }) => {
         password: '',
     });
 
-    const handleSignup = (e: React.FormEvent) => {
+    const handleSignup = async (e: React.FormEvent) => {
         e.preventDefault();
-        console.log(formData);
+        for (const key in formData) {
+            if (!formData[key]) {
+                return alert('Please fill all fields');
+            }
+        }
+        dispatch(signup(formData));
     };
 
     const handleFormChange = (e: React.ChangeEvent<HTMLInputElement>) => {

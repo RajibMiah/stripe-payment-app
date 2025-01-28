@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { User } from '../types/authTypes';
 import { login, signup } from 'redux/thunks/authThunk';
@@ -30,7 +31,7 @@ const authSlice = createSlice({
             })
             .addCase(
                 login.fulfilled,
-                (state: any, action: PayloadAction<User>) => {
+                (state: any, action: PayloadAction<AuthState>) => {
                     state.isAuthenticated = true;
                     state.user = action.payload;
                     state.isLoading = false;
@@ -46,7 +47,7 @@ const authSlice = createSlice({
             })
             .addCase(
                 signup.fulfilled,
-                (state: any, action: PayloadAction<User>) => {
+                (state: any, action: PayloadAction<AuthState>) => {
                     state.isAuthenticated = true;
                     state.user = action.payload;
                     state.isLoading = false;

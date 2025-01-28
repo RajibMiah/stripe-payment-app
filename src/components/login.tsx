@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 
 const Login: React.FC<any> = ({ toggleModal }) => {
     const [formData, setFormData] = useState({
@@ -8,7 +8,7 @@ const Login: React.FC<any> = ({ toggleModal }) => {
     });
 
     // Handle login form submission
-    const handleLogin = (e: any) => {
+    const handleLogin = async (e: any) => {
         e.preventDefault();
         console.log(formData); // You can replace this with actual login logic
     };
@@ -22,9 +22,9 @@ const Login: React.FC<any> = ({ toggleModal }) => {
     };
 
     // Log form data whenever it changes
-    useEffect(() => {
-        console.log(formData);
-    }, [formData]);
+    // useEffect(() => {
+    //     console.log(formData);
+    // }, [formData]);
 
     return (
         <div>
