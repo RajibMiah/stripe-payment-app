@@ -33,8 +33,16 @@ const SelectPlan = () => {
 
     // Handles payment submission
     const onTimePayment = async (planId: string) => {
+        console.log('plan Id', planId);
         try {
-            const res = await dispatch(oneTimePayment({ planId }));
+            const res = await dispatch(
+                oneTimePayment({
+                    items: [
+                        { id: 1, quantity: 3 },
+                        { id: 2, quantity: 1 },
+                    ],
+                })
+            );
 
             if (res.meta.requestStatus === 'rejected') {
                 alert('Payment failed: ' + res.payload);

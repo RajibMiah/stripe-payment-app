@@ -3,6 +3,7 @@ import { Response } from 'express';
 import Stripe from 'stripe';
 import dotenv from 'dotenv';
 import { AuthenticatedRequest } from '../types/global';
+import { StoreItem, storeItems } from '../../constrains/dumy.db';
 
 // Initialize Stripe with the secret key from environment variables
 dotenv.config();
@@ -30,18 +31,18 @@ export const subscription = async (
             await stripe.checkout.sessions.create({
                 payment_method_types: ['card'],
                 mode: 'subscription',
-                line_items: [
-                    {
+                line_items: req.body.items.map((item: StoreItem) => {
+                    const storeItem = storeItems.get(item.id);
+                    return {
                         price_data: {
                             currency: 'usd',
                             product_data: {
-                                name: 'My product',
+                                name: storeItem?.name,
                             },
-                            unit_amount: 100,
+                            unit_amount: storeItem?.priceInCents,
                         },
-                        quantity: 1,
-                    },
-                ],
+                    };
+                }),
                 subscription_data: {
                     trial_end: Math.floor(Date.now() / 1000) + 60 * 60 * 24 * 7,
                     recurring: { interval: 'month' },
@@ -65,25 +66,24 @@ export const oneTimePayment = async (
     req: AuthenticatedRequest,
     res: Response
 ): Promise<any> => {
-    const { priceId } = req.body;
-
     try {
         const session: Stripe.Checkout.Session =
             await stripe.checkout.sessions.create({
                 payment_method_types: ['card'],
                 mode: 'payment',
-                line_items: [
-                    {
+                line_items: req.body.items.map((item: StoreItem) => {
+                    const storeItem = storeItems.get(item.id);
+                    return {
                         price_data: {
                             currency: 'usd',
                             product_data: {
-                                name: 'My product',
+                                name: storeItem?.name,
                             },
-                            unit_amount: 100,
+                            unit_amount: storeItem?.priceInCents,
                         },
-                        quantity: 1,
-                    },
-                ],
+                        quantity: item.quantity,
+                    };
+                }),
                 success_url: `${req.user?.originPath || req.headers.origin}/success?session_id={CHECKOUT_SESSION_ID}`,
                 cancel_url: `${req.user?.originPath || req.headers.origin}/cancel`,
             });
