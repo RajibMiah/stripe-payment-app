@@ -1,5 +1,5 @@
 type StoreItem = {
-    quantity: any;
+    quantity?: number;
     id: number;
     priceInCents: number;
     name: string;
