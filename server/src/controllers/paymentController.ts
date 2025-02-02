@@ -4,6 +4,7 @@ import Stripe from 'stripe';
 import dotenv from 'dotenv';
 import { AuthenticatedRequest } from '../types/global';
 import { StoreItem, storeItems } from '../../constrains/dumy.db';
+import useSubscription  from '../models/subscription';
 
 // Initialize Stripe with the secret key from environment variables
 dotenv.config();
@@ -47,8 +48,8 @@ export const subscription = async (
                     trial_end: Math.floor(Date.now() / 1000) + 60 * 60 * 24 * 7,
                     recurring: { interval: 'month' },
                 },
-                success_url: `${req.user?.originPath || req.headers.origin}/success?session_id={CHECKOUT_SESSION_ID}`,
-                cancel_url: `${req.user?.originPath || req.headers.origin}/cancel`,
+                success_url: `${req.user?.originPath || req.headers.origin}/payment-success?session_id={CHECKOUT_SESSION_ID}`,
+                cancel_url: `${req.user?.originPath || req.headers.origin}/payment-cancel`,
             } as any);
 
         res.json({ id: session.id });
@@ -84,10 +85,14 @@ export const oneTimePayment = async (
                         quantity: item.quantity,
                     };
                 }),
-                success_url: `${req.user?.originPath || req.headers.origin}/success?session_id={CHECKOUT_SESSION_ID}`,
-                cancel_url: `${req.user?.originPath || req.headers.origin}/cancel`,
+                success_url: `${req.user?.originPath || req.headers.origin}/payment-success?session_id={CHECKOUT_SESSION_ID}`,
+                cancel_url: `${req.user?.originPath || req.headers.origin}/payment-cancel`,
             });
-
+        if (session.id) {
+            const newSubscription = new useSubscription({
+                
+            });
+        }
         res.json({ id: session.id });
     } catch (error: unknown) {
         res.status(500).json({ error: (error as Error).message });
