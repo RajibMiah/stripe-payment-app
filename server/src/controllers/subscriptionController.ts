@@ -1,11 +1,14 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Response } from 'express';
+import { Request, Response, NextFunction } from 'express';
 import Stripe from 'stripe';
 import dotenv from 'dotenv';
 import { AuthenticatedRequest } from '../types/global';
 import { StoreItem, storeItems } from '../../constrains/dumy.db';
 import useSubscription from '../models/subscription';
 import SubscriptionPlan from '../models/subscriptionPlan';
+import { validationResult } from 'express-validator';
+import { RequestHandler } from 'express';
+
 // Initialize Stripe with the secret key from environment variables
 dotenv.config();
 
@@ -19,9 +22,52 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string, {
  * @param {Response} res - Express response object
  */
 
-export const addPlan = async (req: Request, res: Response) => {
+interface AddPlanRequestBody {
+    name: string;
+    stripe_price_id: string;
+    trail_days: number;
+    have_trial: boolean;
+    amount: number;
+    type: string;
+}
+
+export const addPlan: RequestHandler = async (
+    req: Request<{}, {}, AddPlanRequestBody>,
+    res: Response,
+    next: NextFunction
+): Promise<any> => {
     try {
+        const errors = validationResult(req);
+
+        if (!errors.isEmpty()) {
+            return res.status(400).json({
+                success: false,
+                msg: 'Errors',
+                errors: errors.array(),
+            });
+        }
+
+        const { name, stripe_price_id, trail_days, have_trial, amount, type } =
+            req.body;
+
+        const subscriptionPlan = new SubscriptionPlan({
+            name,
+            stripe_price_id,
+            trail_days,
+            have_trial,
+            amount,
+            type,
+        });
+
+        const planData = await subscriptionPlan.save();
+
+        return res.status(200).json({
+            success: true,
+            msg: 'Subscription Plan added',
+            data: planData,
+        });
     } catch (error: any) {
+        next(error);
         return res.status(400).json({
             success: false,
             msg: error?.message as string,

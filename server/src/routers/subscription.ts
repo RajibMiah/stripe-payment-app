@@ -4,7 +4,9 @@ import {
     subscription,
     oneTimePayment,
     trialSubscription,
+    addPlan,
 } from '../controllers/subscriptionController';
+import { addPlanValidator } from '../utilites/validator';
 
 // Create an instance of the Express router
 const router = express.Router();
@@ -18,7 +20,7 @@ const router = express.Router();
  * @access Private (Requires authentication)
  */
 
-router.post("/add-plan" , authMiddleware , )
+router.post('/add-plan', authMiddleware, addPlanValidator, addPlan);
 
 router.post('/create-checkout-session', authMiddleware, subscription);
 router.post('/create-one-time-payment', authMiddleware, oneTimePayment);
