@@ -12,7 +12,7 @@ export const oneTimePayment = createAsyncThunk<any, any>(
             console.log('checkout data', checkoutData);
             const authToken = token || localStorage.getItem('token');
             const response = await axios.post(
-                `${process.env.NEXT_PUBLIC_BACKEND_API_URL}/api/payment/create-one-time-payment`,
+                `${process.env.NEXT_PUBLIC_BACKEND_API_URL}/api/subscription/create-one-time-payment`,
                 checkoutData,
                 {
                     headers: {

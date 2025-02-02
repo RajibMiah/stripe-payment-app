@@ -4,14 +4,30 @@ import Stripe from 'stripe';
 import dotenv from 'dotenv';
 import { AuthenticatedRequest } from '../types/global';
 import { StoreItem, storeItems } from '../../constrains/dumy.db';
-import useSubscription  from '../models/subscription';
-
+import useSubscription from '../models/subscription';
+import SubscriptionPlan from '../models/subscriptionPlan';
 // Initialize Stripe with the secret key from environment variables
 dotenv.config();
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string, {
     apiVersion: '2024-12-18.acacia',
 });
+
+/**
+ * Handles one-time payment checkout session creation
+ * @param {Request} req - Express request object
+ * @param {Response} res - Express response object
+ */
+
+export const addPlan = async (req: Request, res: Response) => {
+    try {
+    } catch (error: any) {
+        return res.status(400).json({
+            success: false,
+            msg: error?.message as string,
+        });
+    }
+};
 
 /**
  * Handles subscription-based checkout session creation
@@ -89,9 +105,7 @@ export const oneTimePayment = async (
                 cancel_url: `${req.user?.originPath || req.headers.origin}/payment-cancel`,
             });
         if (session.id) {
-            const newSubscription = new useSubscription({
-                
-            });
+            const newSubscription = new useSubscription({});
         }
         res.json({ id: session.id });
     } catch (error: unknown) {
