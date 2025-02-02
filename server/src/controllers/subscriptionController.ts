@@ -10,7 +10,7 @@ import { validationResult } from 'express-validator';
 import { RequestHandler } from 'express';
 import { AddPlanRequestBody } from '../types/subscription';
 import SubscriptionDetails from '../models/subscriptionDetails';
-import subscriptionHelper from '../helper/subscriptionHelper';
+import { createCustomer } from '../helper/subscriptionHelper';
 
 // Initialize Stripe with the secret key from environment variables
 dotenv.config();
@@ -170,7 +170,7 @@ export const createSubscription: RequestHandler = async (
             console.log('User ID, name, or email is missing in the request');
         }
 
-        const new_customer = new subscriptionHelper(name, email, id);
+        const new_customer = createCustomer(name, email, id);
 
         return res.status(200).json({
             success: true,
