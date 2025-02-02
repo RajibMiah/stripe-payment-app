@@ -10,7 +10,7 @@ import { validationResult } from 'express-validator';
 import { RequestHandler } from 'express';
 import { AddPlanRequestBody } from '../types/subscription';
 import SubscriptionDetails from '../models/subscriptionDetails';
-import { createCustomer } from '../helper/subscriptionHelper';
+import { createCustomer, saveCardDetails } from '../helper/subscriptionHelper';
 
 // Initialize Stripe with the secret key from environment variables
 dotenv.config();
@@ -163,8 +163,9 @@ export const createSubscription: RequestHandler = async (
                 message: 'subscription body is not valid',
             });
         }
-        const { id } = (req as AuthenticatedRequest).body as any;
+        const { id, card } = (req as AuthenticatedRequest).body as any;
         const { name, email } = (req as AuthenticatedRequest).user as any;
+        const userData = (req as AuthenticatedRequest).user;
 
         if (!id || !name || !email) {
             console.log('User ID, name, or email is missing in the request');
@@ -172,10 +173,42 @@ export const createSubscription: RequestHandler = async (
 
         const new_customer = createCustomer(name, email, id);
 
+        if (!(await new_customer).success) {
+            return res.status(400).json({
+                success: false,
+                message: 'Something went wrong',
+            });
+        }
+        const customer = (await new_customer).data as unknown as any;
+        if (!userData) {
+            return res.status(400).json({
+                success: false,
+                message: 'User data is missing',
+            });
+        }
+        if (!customer) {
+            return res.status(400).json({
+                success: false,
+                message: 'Customer creation failed',
+            });
+        }
+
+        // NOTE: CARD DETAILS SAVE
+        const cardDetails = await saveCardDetails(
+            card,
+            userData._id,
+            customer?.id
+        );
+        if (!cardDetails.success) {
+            return res.status(200).json({
+                success: false,
+                message: 'Card details is not saved',
+            });
+        }
         return res.status(200).json({
             success: true,
             message: 'New subscribe customer created',
-            data: new_customer,
+            data: cardDetails,
         });
     } catch (error) {
         next(error);

@@ -1,5 +1,6 @@
 import Stripe from 'stripe';
-
+import CardDetails from '../models/cardDetails';
+import cardDetails from '../models/cardDetails';
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string, {
     apiVersion: '2024-12-18.acacia',
 });
@@ -15,8 +16,53 @@ export const createCustomer = async (
             email,
             source: token_id,
         });
-        return customer;
+
+        return {
+            success: true,
+            data: customer,
+        };
     } catch (error: any) {
-        console.log('error:', error.message);
+        return {
+            success: false,
+            msg: error.message,
+        };
+    }
+};
+
+interface CardData {
+    id: string;
+    name: string;
+    brand: string;
+    month: number;
+    exp_year: number;
+}
+
+export const saveCardDetails = async (
+    data: CardData,
+    user_id: string,
+    customer_id: string
+) => {
+    try {
+        const saveCardDetails = await new cardDetails({
+            user_id,
+            customer_id,
+            card_id: data.id,
+            name: data.name ? data.name : '',
+            brand: data.brand,
+            month: data.month,
+            year: data.exp_year,
+        });
+
+        await saveCardDetails.save();
+
+        return {
+            success: true,
+            data: saveCardDetails,
+        };
+    } catch (error: any) {
+        return {
+            success: false,
+            msg: error.message,
+        };
     }
 };
