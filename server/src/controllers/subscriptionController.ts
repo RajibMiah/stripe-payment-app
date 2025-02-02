@@ -8,6 +8,8 @@ import useSubscription from '../models/subscription';
 import SubscriptionPlan from '../models/subscriptionPlan';
 import { validationResult } from 'express-validator';
 import { RequestHandler } from 'express';
+import { AddPlanRequestBody } from '../types/subscription';
+import SubscriptionDetails from '../models/subscriptionDetails';
 
 // Initialize Stripe with the secret key from environment variables
 dotenv.config();
@@ -21,15 +23,6 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string, {
  * @param {Request} req - Express request object
  * @param {Response} res - Express response object
  */
-
-interface AddPlanRequestBody {
-    name: string;
-    stripe_price_id: string;
-    trail_days: number;
-    have_trial: boolean;
-    amount: number;
-    type: string;
-}
 
 export const addPlan: RequestHandler = async (
     req: Request<{}, {}, AddPlanRequestBody>,
@@ -63,18 +56,98 @@ export const addPlan: RequestHandler = async (
 
         return res.status(200).json({
             success: true,
-            msg: 'Subscription Plan added',
+            message: 'Subscription Plan added',
             data: planData,
         });
     } catch (error: any) {
         next(error);
         return res.status(400).json({
             success: false,
-            msg: error?.message as string,
+            message: error?.message as string,
         });
     }
 };
 
+export const getPlans: RequestHandler = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+): Promise<any> => {
+    try {
+        const plans = await SubscriptionPlan.find();
+
+        return res.status(200).json({
+            success: true,
+            message: 'Get all subscription plans',
+            data: plans,
+        });
+    } catch (errors: any) {
+        next(errors);
+        return res.status(400).json({
+            success: false,
+            message: errors.message as string,
+        });
+    }
+};
+
+export const getPlanDetails: RequestHandler = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+): Promise<any> => {
+    try {
+        const errors = validationResult(req);
+
+        if (!errors.isEmpty()) {
+            return res.status(400).json({
+                success: false,
+                message: 'Something went wrong',
+            });
+        }
+
+        const { plan_id } = req.body;
+
+        const planDetails = SubscriptionPlan.find({
+            _id: plan_id,
+        });
+        if (!planDetails) {
+            return res.status(400).json({
+                success: false,
+                message: 'Something went wrong',
+            });
+        }
+
+        const user_id = (req as AuthenticatedRequest).user?.user.id as any;
+        if (!user_id) {
+            console.log('undefined auth user id, should login first');
+        }
+
+        const haveBuyedAnyPlan = await SubscriptionDetails.countDocuments({
+            user_id,
+        });
+        let subs_msg: string;
+        const planDetailsTyped = (await SubscriptionPlan.findOne({
+            _id: plan_id,
+        }).lean()) as unknown as any;
+        if (haveBuyedAnyPlan == 0 && planDetailsTyped?.have_trial === true) {
+            subs_msg = `You will get ${planDetailsTyped.trail_days} days trial, and after we will charge you ${planDetailsTyped.amount} for ${planDetailsTyped.name} subscription plan.`;
+        } else {
+            subs_msg = ` we will charge you ${planDetailsTyped.amount} for ${planDetailsTyped.name} subscription plan.`;
+        }
+
+        return res.status(200).json({
+            success: true,
+            message: 'Request is successfull',
+            data: planDetails,
+        });
+    } catch (error) {
+        next(error);
+        return res.status(500).json({
+            success: false,
+            message: 'something went wrong',
+        });
+    }
+};
 /**
  * Handles subscription-based checkout session creation
  * @param {Request} req - Express request object
