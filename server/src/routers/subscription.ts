@@ -7,8 +7,13 @@ import {
     addPlan,
     getPlans,
     getPlanDetails,
+    createSubscription,
 } from '../controllers/subscriptionController';
-import { addPlanValidator, planDetailsValidator } from '../utilites/validator';
+import {
+    addPlanValidator,
+    createSubscriptionValidator,
+    planDetailsValidator,
+} from '../utilites/validator';
 
 // Create an instance of the Express router
 const router = express.Router();
@@ -29,6 +34,12 @@ router.get(
     authMiddleware,
     planDetailsValidator,
     getPlanDetails
+);
+router.post(
+    '/create-subscription',
+    authMiddleware,
+    createSubscriptionValidator,
+    createSubscription
 );
 router.post('/create-checkout-session', authMiddleware, subscription);
 router.post('/create-one-time-payment', authMiddleware, oneTimePayment);

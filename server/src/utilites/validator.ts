@@ -12,3 +12,13 @@ export const addPlanValidator = [
 export const planDetailsValidator = [
     check('plan_id', 'plan_id is required').not().isEmpty(),
 ];
+
+export const createSubscriptionValidator = [
+    check('id', 'id is required').not().isEmpty(),
+    check('card.id', 'card.id is required').not().isEmpty(),
+    check('card.brand', 'card.brand is requred').not().isEmpty(),
+    check('chard.country', 'card.country is required').not().isEmpty(),
+    check('card.exp_month', 'card.exp_month is required').not().isEmpty(),
+    check('card.exp_year', 'card.exp_year is required').not().isEmpty(),
+    check('card.exp_last4', 'card.last4 is required').not().isEmpty(),
+];

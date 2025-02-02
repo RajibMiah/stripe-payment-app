@@ -10,6 +10,7 @@ import { validationResult } from 'express-validator';
 import { RequestHandler } from 'express';
 import { AddPlanRequestBody } from '../types/subscription';
 import SubscriptionDetails from '../models/subscriptionDetails';
+import subscriptionHelper from '../helper/subscriptionHelper';
 
 // Initialize Stripe with the secret key from environment variables
 dotenv.config();
@@ -145,6 +146,42 @@ export const getPlanDetails: RequestHandler = async (
         return res.status(500).json({
             success: false,
             message: 'something went wrong',
+        });
+    }
+};
+
+export const createSubscription: RequestHandler = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+): Promise<any> => {
+    try {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(400).json({
+                success: false,
+                message: 'subscription body is not valid',
+            });
+        }
+        const { id } = (req as AuthenticatedRequest).body as any;
+        const { name, email } = (req as AuthenticatedRequest).user as any;
+
+        if (!id || !name || !email) {
+            console.log('User ID, name, or email is missing in the request');
+        }
+
+        const new_customer = new subscriptionHelper(name, email, id);
+
+        return res.status(200).json({
+            success: true,
+            message: 'New subscribe customer created',
+            data: new_customer,
+        });
+    } catch (error) {
+        next(error);
+        return res.status(500).json({
+            success: false,
+            message: 'Something went wrong',
         });
     }
 };
