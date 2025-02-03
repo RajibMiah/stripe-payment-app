@@ -1,29 +1,24 @@
+/* eslint-disable @typescript-eslint/no-empty-object-type */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Request, Response, NextFunction } from 'express';
+import { Request, Response, NextFunction, RequestHandler } from 'express';
 import Stripe from 'stripe';
-import dotenv from 'dotenv';
 import { AuthenticatedRequest } from '../types/global';
 import { StoreItem, storeItems } from '../../constrains/dumy.db';
 import useSubscription from '../models/subscription';
 import SubscriptionPlan from '../models/subscriptionPlan';
 import { validationResult } from 'express-validator';
-import { RequestHandler } from 'express';
 import { AddPlanRequestBody } from '../types/subscription';
 import SubscriptionDetails from '../models/subscriptionDetails';
 import { createCustomer, saveCardDetails } from '../helper/subscriptionHelper';
+import dotenv from 'dotenv';
 
 // Initialize Stripe with the secret key from environment variables
 dotenv.config();
 
+console.log('STRIPE_SECRET_KEY', process.env.STRIPE_SECRET_KEY);
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string, {
     apiVersion: '2024-12-18.acacia',
 });
-
-/**
- * Handles one-time payment checkout session creation
- * @param {Request} req - Express request object
- * @param {Response} res - Express response object
- */
 
 export const addPlan: RequestHandler = async (
     req: Request<{}, {}, AddPlanRequestBody>,
@@ -108,9 +103,7 @@ export const getPlanDetails: RequestHandler = async (
 
         const { plan_id } = req.body;
 
-        const planDetails = SubscriptionPlan.find({
-            _id: plan_id,
-        });
+        const planDetails = await SubscriptionPlan.findById(plan_id);
         if (!planDetails) {
             return res.status(400).json({
                 success: false,
@@ -127,9 +120,7 @@ export const getPlanDetails: RequestHandler = async (
             user_id,
         });
         let subs_msg: string;
-        const planDetailsTyped = (await SubscriptionPlan.findOne({
-            _id: plan_id,
-        }).lean()) as unknown as any;
+        const planDetailsTyped = planDetails.toObject() as any;
         if (haveBuyedAnyPlan == 0 && planDetailsTyped?.have_trial === true) {
             subs_msg = `You will get ${planDetailsTyped.trail_days} days trial, and after we will charge you ${planDetailsTyped.amount} for ${planDetailsTyped.name} subscription plan.`;
         } else {
@@ -138,7 +129,7 @@ export const getPlanDetails: RequestHandler = async (
 
         return res.status(200).json({
             success: true,
-            message: 'Request is successfull',
+            message: 'Request is successful',
             data: planDetails,
         });
     } catch (error) {
@@ -218,14 +209,16 @@ export const createSubscription: RequestHandler = async (
         });
     }
 };
+
 /**
  * Handles subscription-based checkout session creation
  * @param {Request} req - Express request object
  * @param {Response} res - Express response object
  */
-export const subscription = async (
+export const subscription: RequestHandler = async (
     req: AuthenticatedRequest,
-    res: Response
+    res: Response,
+    next: NextFunction
 ): Promise<any> => {
     const { priceId } = req.body;
     if (!priceId) {
@@ -259,6 +252,7 @@ export const subscription = async (
 
         res.json({ id: session.id });
     } catch (error: unknown) {
+        next(error);
         res.status(500).json({ error: (error as Error).message });
     }
 };
@@ -268,9 +262,10 @@ export const subscription = async (
  * @param {Request} req - Express request object
  * @param {Response} res - Express response object
  */
-export const oneTimePayment = async (
+export const oneTimePayment: RequestHandler = async (
     req: AuthenticatedRequest,
-    res: Response
+    res: Response,
+    next: NextFunction
 ): Promise<any> => {
     try {
         const session: Stripe.Checkout.Session =
@@ -298,6 +293,7 @@ export const oneTimePayment = async (
         }
         res.json({ id: session.id });
     } catch (error: unknown) {
+        next(error);
         res.status(500).json({ error: (error as Error).message });
     }
 };
@@ -307,9 +303,10 @@ export const oneTimePayment = async (
  * @param {Request} req - Express request object
  * @param {Response} res - Express response object
  */
-export const trialSubscription = async (
+export const trialSubscription: RequestHandler = async (
     req: AuthenticatedRequest,
-    res: Response
+    res: Response,
+    next: NextFunction
 ): Promise<any> => {
     const { customerId, priceId } = req.body;
 
@@ -328,6 +325,7 @@ export const trialSubscription = async (
 
         res.json({ id: subscription.id });
     } catch (error: unknown) {
+        next(error);
         res.status(500).json({ error: (error as Error).message });
     }
 };

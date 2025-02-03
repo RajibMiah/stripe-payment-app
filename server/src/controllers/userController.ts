@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Request, Response } from 'express';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
@@ -51,6 +52,8 @@ export const userLoginController = async (
             {
                 id: existingUser._id,
                 email: existingUser.email,
+                firstName: existingUser.firstName,
+                lastName: existingUser.lastName,
                 originPath: req.headers.origin,
             },
             process.env.JWT_SECRET as string,
@@ -76,11 +79,9 @@ export const userRegisterController = async (
         }
 
         if (password.length < 6) {
-            return res
-                .status(400)
-                .json({
-                    message: 'Password must be at least 6 characters long',
-                });
+            return res.status(400).json({
+                message: 'Password must be at least 6 characters long',
+            });
         }
 
         const existingUser = await UserModel.findOne({ email });

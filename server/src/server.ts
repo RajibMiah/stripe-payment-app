@@ -1,6 +1,5 @@
 import express, { Request, Response } from 'express';
-import userRouter from './routers/user';
-import subscriptionRoute from './routers/subscription';
+import v1Router from './routers/v1';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 import bodyParser from 'body-parser';
@@ -25,10 +24,11 @@ mongoose
 app.use(express.json());
 app.use(bodyParser.json());
 app.use(cors());
-app.use('/api/auth', userRouter);
-app.use('/api/subscription', subscriptionRoute);
 
-// Routes
+//ROUTERS
+app.use('/api/v1', v1Router);
+
+// DEFAULT ROUTER
 app.get('/api/hello', (req: Request, res: Response) => {
     res.send('Hello, TypeScript with Express!');
 });

@@ -71,4 +71,4 @@ const subscriptionDetailsSchema = new mongoose.Schema(
     { timestamps: true }
 );
 
-export default mongoose.model('subscriptionDetails', subscriptionDetailsSchema);
+export default mongoose.model('SubscriptionDetails', subscriptionDetailsSchema);

@@ -1,5 +1,5 @@
 import express from 'express';
-import { authMiddleware } from '../middlewares/authMiddleware';
+import { authMiddleware } from '../../middlewares/authMiddleware';
 import {
     subscription,
     oneTimePayment,
@@ -8,12 +8,12 @@ import {
     getPlans,
     getPlanDetails,
     createSubscription,
-} from '../controllers/subscriptionController';
+} from '../../controllers/subscriptionController';
 import {
     addPlanValidator,
     createSubscriptionValidator,
     planDetailsValidator,
-} from '../utilites/validator';
+} from '../../utilites/validator';
 
 // Create an instance of the Express router
 const router = express.Router();
