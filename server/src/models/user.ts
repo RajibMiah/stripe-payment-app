@@ -31,7 +31,8 @@ const userSchema = new mongoose.Schema(
             default: 'user',
         },
         is_subscribed: {
-            type: 
+            type: Boolean,
+            default: false,
         },
         subscriptions: {
             type: mongoose.Schema.Types.ObjectId,

@@ -19,8 +19,8 @@ const subscriptionDetailsSchema = new mongoose.Schema(
             required: true,
         },
         subscription_plan_price_id: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: 'subscriptionPlans',
+            type: String,
+            required: true,
         },
         plan_amount: {
             type: Number,
