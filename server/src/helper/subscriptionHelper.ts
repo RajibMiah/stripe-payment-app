@@ -41,7 +41,7 @@ interface CardData {
 }
 
 export const saveCardDetails = async (
-    data: CardData,
+    data: CardData | any,
     user_id: string,
     customer_id: string
 ) => {

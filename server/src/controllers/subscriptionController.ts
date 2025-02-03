@@ -7,15 +7,19 @@ import { StoreItem, storeItems } from '../../constrains/dumy.db';
 import useSubscription from '../models/subscription';
 import SubscriptionPlan from '../models/subscriptionPlan';
 import { validationResult } from 'express-validator';
-import { AddPlanRequestBody } from '../types/subscription';
+import {
+    AddPlanRequestBody,
+    CreateSubscriptionRequestBody,
+} from '../types/subscription';
 import SubscriptionDetails from '../models/subscriptionDetails';
 import { createCustomer, saveCardDetails } from '../helper/subscriptionHelper';
 import dotenv from 'dotenv';
+import { UserJwtToken } from '../types/user';
+import { convertFullName } from '../utilites/user';
 
 // Initialize Stripe with the secret key from environment variables
 dotenv.config();
 
-console.log('STRIPE_SECRET_KEY', process.env.STRIPE_SECRET_KEY);
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string, {
     apiVersion: '2024-12-18.acacia',
 });
@@ -111,7 +115,7 @@ export const getPlanDetails: RequestHandler = async (
             });
         }
 
-        const user_id = (req as AuthenticatedRequest).user?.user.id as any;
+        const user_id = (req as AuthenticatedRequest).user?.id;
         if (!user_id) {
             console.log('undefined auth user id, should login first');
         }
@@ -119,8 +123,10 @@ export const getPlanDetails: RequestHandler = async (
         const haveBuyedAnyPlan = await SubscriptionDetails.countDocuments({
             user_id,
         });
+
         let subs_msg: string;
         const planDetailsTyped = planDetails.toObject() as any;
+
         if (haveBuyedAnyPlan == 0 && planDetailsTyped?.have_trial === true) {
             subs_msg = `You will get ${planDetailsTyped.trail_days} days trial, and after we will charge you ${planDetailsTyped.amount} for ${planDetailsTyped.name} subscription plan.`;
         } else {
@@ -129,7 +135,7 @@ export const getPlanDetails: RequestHandler = async (
 
         return res.status(200).json({
             success: true,
-            message: 'Request is successful',
+            message: subs_msg,
             data: planDetails,
         });
     } catch (error) {
@@ -151,26 +157,37 @@ export const createSubscription: RequestHandler = async (
         if (!errors.isEmpty()) {
             return res.status(400).json({
                 success: false,
-                message: 'subscription body is not valid',
+                message: errors,
             });
         }
-        const { id, card } = (req as AuthenticatedRequest).body as any;
-        const { name, email } = (req as AuthenticatedRequest).user as any;
-        const userData = (req as AuthenticatedRequest).user;
+        // HERE ID MEANS USER CREATE TOKEN ID
+        const { id, card } = (req as AuthenticatedRequest)
+            .body as CreateSubscriptionRequestBody;
+        const { firstName, last_name, email } = (req as AuthenticatedRequest)
+            .user as any;
 
-        if (!id || !name || !email) {
-            console.log('User ID, name, or email is missing in the request');
+        const userData = (req as AuthenticatedRequest).user as UserJwtToken;
+
+        if (!id || !firstName || !last_name || !email) {
+            console.log(
+                'subscription  ID, name, or email is missing in the request'
+            );
         }
 
-        const new_customer = createCustomer(name, email, id);
+        // CREATE A STRIPE CUSTOMER ID
+        const stipe_new_customer = await createCustomer(
+            convertFullName(firstName, last_name),
+            email,
+            id
+        );
 
-        if (!(await new_customer).success) {
+        if (!(await stipe_new_customer).success) {
             return res.status(400).json({
                 success: false,
                 message: 'Something went wrong',
             });
         }
-        const customer = (await new_customer).data as unknown as any;
+        const customer = (await stipe_new_customer).data as unknown as any;
         if (!userData) {
             return res.status(400).json({
                 success: false,
@@ -187,7 +204,7 @@ export const createSubscription: RequestHandler = async (
         // NOTE: CARD DETAILS SAVE
         const cardDetails = await saveCardDetails(
             card,
-            userData._id,
+            userData.id,
             customer?.id
         );
         if (!cardDetails.success) {

@@ -29,8 +29,8 @@ const router = express.Router();
 
 router.post('/add-plan', authMiddleware, addPlanValidator, addPlan);
 router.get('/get-plans', authMiddleware, getPlans);
-router.get(
-    '/plan-detials',
+router.post(
+    '/plan-details',
     authMiddleware,
     planDetailsValidator,
     getPlanDetails
