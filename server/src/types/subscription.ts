@@ -7,13 +7,13 @@ export interface AddPlanRequestBody {
     type: string;
 }
 
-interface GetPlanRequestBody {
+export interface subscriptionPlan {
     name: string;
     stripe_price_id: string;
     trial_days: number;
     have_trial: boolean;
     amount: number;
-    type: string;
+    type: number;
 }
 
 export interface CardDetails {

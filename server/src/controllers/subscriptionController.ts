@@ -10,6 +10,7 @@ import { validationResult } from 'express-validator';
 import {
     AddPlanRequestBody,
     CreateSubscriptionRequestBody,
+    subscriptionPlan,
 } from '../types/subscription';
 import SubscriptionDetails from '../models/subscriptionDetails';
 import {
@@ -20,6 +21,12 @@ import {
 import dotenv from 'dotenv';
 import { UserJwtToken } from '../types/user';
 import { convertFullName } from '../utilites/user';
+import {
+    createStripeCustomer,
+    findSubscriptionPlan,
+    saveCardDetailsHelper,
+    validateRequest,
+} from '../helper/create-subscription-helper';
 
 // Initialize Stripe with the secret key from environment variables
 dotenv.config();
@@ -154,95 +161,71 @@ export const getPlanDetails: RequestHandler = async (
 };
 
 export const createSubscription: RequestHandler = async (
-    req: Request,
+    req: Request<{}, {}, CreateSubscriptionRequestBody>,
     res: Response,
     next: NextFunction
 ): Promise<any> => {
     try {
-        const errors = validationResult(req);
-        if (!errors.isEmpty()) {
-            return res.status(400).json({
-                success: false,
-                message: errors,
-            });
+        // Validate request
+        const validationError = validateRequest(req);
+        if (validationError) {
+            return res.status(400).json(validationError);
         }
 
-        const { plan_id, card_data } = (req as AuthenticatedRequest)
-            .body as CreateSubscriptionRequestBody;
+        const { plan_id, card_data } = req.body;
         const { firstName, lastName, email } = (req as AuthenticatedRequest)
             .user as any;
-
         const userData = (req as AuthenticatedRequest).user as UserJwtToken;
 
         if (!plan_id || !firstName || !lastName || !email) {
-            console.log(
-                'subscription  ID, name, or email is missing in the request'
-            );
-        }
-
-        const subscriptionPlan = await SubscriptionPlan.findOne({
-            _id: plan_id,
-        });
-
-        if (!subscriptionPlan) {
             return res.status(400).json({
                 success: false,
-                message: 'No subscription found',
+                message:
+                    'Subscription ID, name, or email is missing in the request',
             });
         }
 
-        // CREATE A STRIPE CUSTOMER ID
-        const stipe_new_customer = await createCustomer(
-            convertFullName(firstName, lastName),
+        // Find subscription plan
+        const subscriptionPlan = await findSubscriptionPlan(plan_id);
+        if (!(subscriptionPlan as any)?.success) {
+            return res.status(400).json(subscriptionPlan);
+        }
+
+        // Create Stripe customer
+        const customer = (await createStripeCustomer(
+            firstName,
+            lastName,
             email,
             card_data.id
-        );
-
-        if (!(await stipe_new_customer).success) {
-            return res.status(400).json({
-                success: false,
-                message: 'Something went wrong',
-            });
-        }
-        const customer = (await stipe_new_customer).data as unknown as any;
-        if (!userData) {
-            return res.status(400).json({
-                success: false,
-                message: 'User data is missing',
-            });
-        }
-        if (!customer) {
-            return res.status(400).json({
-                success: false,
-                message: 'Customer creation failed',
-            });
+        )) as any;
+        if (!customer.success) {
+            return res.status(400).json(customer);
         }
 
+        // Create subscription
         let subscriptionData = null;
-        if (subscriptionPlan.type == 0) {
-            //monthly trial
+        if ((subscriptionPlan as subscriptionPlan).type === 0) {
             subscriptionData = monthlyTrialSubscription(
                 customer.id,
                 userData.id,
                 subscriptionPlan
             );
-        } else if (subscriptionPlan.type == 1) {
+        } else if ((subscriptionPlan as subscriptionPlan).type === 1) {
             // yearly trial
-        } else if (subscriptionPlan.type == 2) {
-            // life time trial
+        } else if ((subscriptionPlan as subscriptionPlan).type === 2) {
+            // lifetime trial
         }
-        // NOTE: CARD DETAILS SAVE
-        const cardDetails = await saveCardDetails(
+
+        // Save card details
+        const cardDetails = await saveCardDetailsHelper(
             card_data.card,
             userData.id,
-            customer?.id
+            customer.id
         );
         if (!cardDetails.success) {
-            return res.status(200).json({
-                success: false,
-                message: 'Card details is not saved',
-            });
+            return res.status(400).json(cardDetails);
         }
+
         return res.status(200).json({
             success: true,
             message: 'New subscribe customer created',
