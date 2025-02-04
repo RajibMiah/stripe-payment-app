@@ -10,7 +10,7 @@ const subscriptionPlanSchema = new mongoose.Schema(
             type: String,
             required: true,
         },
-        trail_days: {
+        trial_days: {
             type: Number,
             required: true,
         },

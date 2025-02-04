@@ -50,7 +50,7 @@ const subscriptionDetailsSchema = new mongoose.Schema(
             type: Date,
             required: true,
         },
-        trail_end: {
+        trial_end: {
             type: Date,
             default: null,
         },

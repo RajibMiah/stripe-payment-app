@@ -12,7 +12,11 @@ import {
     CreateSubscriptionRequestBody,
 } from '../types/subscription';
 import SubscriptionDetails from '../models/subscriptionDetails';
-import { createCustomer, saveCardDetails } from '../helper/subscriptionHelper';
+import {
+    createCustomer,
+    monthlyTrialSubscription,
+    saveCardDetails,
+} from '../helper/subscriptionHelper';
 import dotenv from 'dotenv';
 import { UserJwtToken } from '../types/user';
 import { convertFullName } from '../utilites/user';
@@ -35,18 +39,18 @@ export const addPlan: RequestHandler = async (
         if (!errors.isEmpty()) {
             return res.status(400).json({
                 success: false,
-                msg: 'Errors',
+                message: 'Validation failed',
                 errors: errors.array(),
             });
         }
 
-        const { name, stripe_price_id, trail_days, have_trial, amount, type } =
+        const { name, stripe_price_id, trial_days, have_trial, amount, type } =
             req.body;
 
         const subscriptionPlan = new SubscriptionPlan({
             name,
             stripe_price_id,
-            trail_days,
+            trial_days,
             have_trial,
             amount,
             type,
@@ -56,7 +60,7 @@ export const addPlan: RequestHandler = async (
 
         return res.status(200).json({
             success: true,
-            message: 'Subscription Plan added',
+            message: 'Subscription Plan added successfully',
             data: planData,
         });
     } catch (error: any) {
@@ -101,7 +105,8 @@ export const getPlanDetails: RequestHandler = async (
         if (!errors.isEmpty()) {
             return res.status(400).json({
                 success: false,
-                message: 'Something went wrong',
+                message: 'Validation failed',
+                errors: errors.array(),
             });
         }
 
@@ -109,9 +114,9 @@ export const getPlanDetails: RequestHandler = async (
 
         const planDetails = await SubscriptionPlan.findById(plan_id);
         if (!planDetails) {
-            return res.status(400).json({
+            return res.status(404).json({
                 success: false,
-                message: 'Something went wrong',
+                message: 'Subscription plan not found',
             });
         }
 
@@ -128,7 +133,7 @@ export const getPlanDetails: RequestHandler = async (
         const planDetailsTyped = planDetails.toObject() as any;
 
         if (haveBuyedAnyPlan == 0 && planDetailsTyped?.have_trial === true) {
-            subs_msg = `You will get ${planDetailsTyped.trail_days} days trial, and after we will charge you ${planDetailsTyped.amount} for ${planDetailsTyped.name} subscription plan.`;
+            subs_msg = `You will get ${planDetailsTyped.trial_days} days trial, and after we will charge you ${planDetailsTyped.amount} for ${planDetailsTyped.name} subscription plan.`;
         } else {
             subs_msg = ` we will charge you ${planDetailsTyped.amount} for ${planDetailsTyped.name} subscription plan.`;
         }
@@ -142,7 +147,8 @@ export const getPlanDetails: RequestHandler = async (
         next(error);
         return res.status(500).json({
             success: false,
-            message: 'something went wrong',
+            message:
+                'An unexpected error occurred while fetching the subscription plan details.',
         });
     }
 };
@@ -160,25 +166,36 @@ export const createSubscription: RequestHandler = async (
                 message: errors,
             });
         }
-        // HERE ID MEANS USER CREATE TOKEN ID
-        const { id, card } = (req as AuthenticatedRequest)
+
+        const { plan_id, card_data } = (req as AuthenticatedRequest)
             .body as CreateSubscriptionRequestBody;
-        const { firstName, last_name, email } = (req as AuthenticatedRequest)
+        const { firstName, lastName, email } = (req as AuthenticatedRequest)
             .user as any;
 
         const userData = (req as AuthenticatedRequest).user as UserJwtToken;
 
-        if (!id || !firstName || !last_name || !email) {
+        if (!plan_id || !firstName || !lastName || !email) {
             console.log(
                 'subscription  ID, name, or email is missing in the request'
             );
         }
 
+        const subscriptionPlan = await SubscriptionPlan.findOne({
+            _id: plan_id,
+        });
+
+        if (!subscriptionPlan) {
+            return res.status(400).json({
+                success: false,
+                message: 'No subscription found',
+            });
+        }
+
         // CREATE A STRIPE CUSTOMER ID
         const stipe_new_customer = await createCustomer(
-            convertFullName(firstName, last_name),
+            convertFullName(firstName, lastName),
             email,
-            id
+            card_data.id
         );
 
         if (!(await stipe_new_customer).success) {
@@ -201,9 +218,22 @@ export const createSubscription: RequestHandler = async (
             });
         }
 
+        let subscriptionData = null;
+        if (subscriptionPlan.type == 0) {
+            //monthly trial
+            subscriptionData = monthlyTrialSubscription(
+                customer.id,
+                userData.id,
+                subscriptionPlan
+            );
+        } else if (subscriptionPlan.type == 1) {
+            // yearly trial
+        } else if (subscriptionPlan.type == 2) {
+            // life time trial
+        }
         // NOTE: CARD DETAILS SAVE
         const cardDetails = await saveCardDetails(
-            card,
+            card_data.card,
             userData.id,
             customer?.id
         );
@@ -216,7 +246,7 @@ export const createSubscription: RequestHandler = async (
         return res.status(200).json({
             success: true,
             message: 'New subscribe customer created',
-            data: cardDetails,
+            data: subscriptionData,
         });
     } catch (error) {
         next(error);

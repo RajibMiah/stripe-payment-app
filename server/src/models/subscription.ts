@@ -13,7 +13,7 @@ const subscriptionsSchema = new mongoose.Schema(
         },
         plan: {
             type: String,
-            enum: ['one-time', 'weekly', 'free-trail', 'subscription'],
+            enum: ['one-time', 'weekly', 'free-trial', 'subscription'],
             required: true,
         },
         have_trial: {
