@@ -10,7 +10,8 @@ import { validationResult } from 'express-validator';
 import {
     AddPlanRequestBody,
     CreateSubscriptionRequestBody,
-    subscriptionPlan,
+    SubscriptionPlanType,
+    subscriptionTypeFunctions,
 } from '../types/subscription';
 import SubscriptionDetails from '../models/subscriptionDetails';
 import {
@@ -202,19 +203,23 @@ export const createSubscription: RequestHandler = async (
             return res.status(400).json(customer);
         }
 
-        // Create subscription
-        let subscriptionData = null;
-        if ((subscriptionPlan as subscriptionPlan).type === 0) {
-            subscriptionData = monthlyTrialSubscription(
-                customer.id,
-                userData.id,
-                subscriptionPlan
-            );
-        } else if ((subscriptionPlan as subscriptionPlan).type === 1) {
-            // yearly trial
-        } else if ((subscriptionPlan as subscriptionPlan).type === 2) {
-            // lifetime trial
+        const subscriptionFunction =
+            subscriptionTypeFunctions[
+                (subscriptionPlan as SubscriptionPlanType).type
+            ];
+
+        if (!subscriptionFunction) {
+            return res.status(400).json({
+                success: false,
+                message: 'Invalid subscription type',
+            });
         }
+
+        const subscriptionData = subscriptionFunction(
+            customer.id,
+            userData.id,
+            subscriptionPlan
+        );
 
         // Save card details
         const cardDetails = await saveCardDetailsHelper(

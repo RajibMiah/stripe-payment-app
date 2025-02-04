@@ -1,3 +1,9 @@
+import {
+    lifetimeTrialSubscription,
+    monthlyTrialSubscription,
+    yearlyTrialSubscription,
+} from '../helper/subscriptionHelper';
+
 export interface AddPlanRequestBody {
     name: string;
     stripe_price_id: string;
@@ -7,7 +13,7 @@ export interface AddPlanRequestBody {
     type: string;
 }
 
-export interface subscriptionPlan {
+export interface SubscriptionPlanType {
     name: string;
     stripe_price_id: string;
     trial_days: number;
@@ -41,3 +47,15 @@ export interface CardData {
     month: number;
     exp_year: number;
 }
+
+export const subscriptionTypeFunctions: {
+    [key: number]: (
+        customer_id: string,
+        user_id: string,
+        subscriptionPlan: any
+    ) => any;
+} = {
+    0: monthlyTrialSubscription,
+    1: yearlyTrialSubscription,
+    2: lifetimeTrialSubscription,
+};
