@@ -10,21 +10,18 @@ import { validationResult } from 'express-validator';
 import {
     AddPlanRequestBody,
     CreateSubscriptionRequestBody,
-    SubscriptionPlanType,
-    subscriptionTypeFunctions,
 } from '../types/subscription';
 import SubscriptionDetails from '../models/subscriptionDetails';
-import {
-    createCustomer,
-    monthlyTrialSubscription,
-    saveCardDetails,
-} from '../helper/subscriptionHelper';
+
 import dotenv from 'dotenv';
 import { UserJwtToken } from '../types/user';
-import { convertFullName } from '../utilites/user';
+
 import {
+    checkActiveSubscription,
     createStripeCustomer,
     findSubscriptionPlan,
+    handleSubscriptionTransition,
+    handleTransition,
     saveCardDetailsHelper,
     validateRequest,
 } from '../helper/create-subscription-helper';
@@ -187,8 +184,8 @@ export const createSubscription: RequestHandler = async (
         }
 
         // Find subscription plan
-        const subscriptionPlan = await findSubscriptionPlan(plan_id);
-        if (!(subscriptionPlan as any)?.success) {
+        const subscriptionPlan = (await findSubscriptionPlan(plan_id)) as any;
+        if (!subscriptionPlan.success) {
             return res.status(400).json(subscriptionPlan);
         }
 
@@ -203,23 +200,30 @@ export const createSubscription: RequestHandler = async (
             return res.status(400).json(customer);
         }
 
-        const subscriptionFunction =
-            subscriptionTypeFunctions[
-                (subscriptionPlan as SubscriptionPlanType).type
-            ];
+        // Check active subscription
+        const activeSubscription = await checkActiveSubscription(userData.id);
 
-        if (!subscriptionFunction) {
-            return res.status(400).json({
-                success: false,
-                message: 'Invalid subscription type',
-            });
-        }
-
-        const subscriptionData = subscriptionFunction(
-            customer.id,
-            userData.id,
+        // Handle subscription transition
+        const transitionType = handleSubscriptionTransition(
+            activeSubscription,
             subscriptionPlan
         );
+
+        // Handle transition using mapping
+        let subscriptionData;
+        try {
+            subscriptionData = (await handleTransition(
+                transitionType,
+                customer.id,
+                userData.id,
+                subscriptionPlan
+            )) as any;
+        } catch (error: any) {
+            return res.status(400).json({
+                success: false,
+                message: error.message,
+            });
+        }
 
         // Save card details
         const cardDetails = await saveCardDetailsHelper(
@@ -233,7 +237,7 @@ export const createSubscription: RequestHandler = async (
 
         return res.status(200).json({
             success: true,
-            message: 'New subscribe customer created',
+            message: 'Subscription created successfully',
             data: subscriptionData,
         });
     } catch (error) {
@@ -244,7 +248,6 @@ export const createSubscription: RequestHandler = async (
         });
     }
 };
-
 /**
  * Handles subscription-based checkout session creation
  * @param {Request} req - Express request object
