@@ -8,3 +8,14 @@ export const formatDate = (date: Date) => {
 
     return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
 };
+
+export const getDaysInMonth = () => {
+    const now = new Date();
+    return new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
+};
+
+export const getCurrentDay = () => {
+    const now = new Date();
+
+    return now.getDate();
+};

@@ -2,7 +2,7 @@ import Stripe from 'stripe';
 import cardDetails from '../models/cardDetails';
 import dotenv from 'dotenv';
 import { CardData } from '../types/subscription';
-import { formatDate } from '../utilites/data';
+import { formatDate } from '../utilites/formator';
 import subscriptionDetails from '../models/subscriptionDetails';
 
 dotenv.config();
@@ -86,7 +86,7 @@ export const monthlyTrialSubscription = async (
             stripe_customer_id: customer_id,
             subscription_plan_price_id: subscriptionPlan.stripe_price_id,
             plan_amount: subscriptionPlan.amount,
-            plan_amount_currency: 'usd',
+            plan_amount_currency: 'USD',
             plan_interval: 'month',
             plan_interval_count: 1,
             created: current_period_start,
@@ -126,7 +126,7 @@ export const yearlyTrialSubscription = async (
             stripe_customer_id: customer_id,
             subscription_plan_price_id: subscriptionPlan.stripe_price_id,
             plan_amount: subscriptionPlan.amount,
-            plan_amount_currency: 'usd',
+            plan_amount_currency: 'USD',
             plan_interval: 'year',
             plan_interval_count: 1,
             created: current_period_start,
@@ -166,7 +166,7 @@ export const lifetimeTrialSubscription = async (
             stripe_customer_id: customer_id,
             subscription_plan_price_id: subscriptionPlan.stripe_price_id,
             plan_amount: subscriptionPlan.amount,
-            plan_amount_currency: 'usd',
+            plan_amount_currency: 'USD',
             plan_interval: 'life-time',
             plan_interval_count: 1,
             created: current_period_start,
@@ -184,3 +184,5 @@ export const lifetimeTrialSubscription = async (
         return null;
     }
 };
+
+// ================ PANDDING CHARGE ===================

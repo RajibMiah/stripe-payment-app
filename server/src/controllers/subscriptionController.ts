@@ -4,7 +4,6 @@ import { Request, Response, NextFunction, RequestHandler } from 'express';
 import Stripe from 'stripe';
 import { AuthenticatedRequest } from '../types/global';
 import { StoreItem, storeItems } from '../../constrains/dumy.db';
-import useSubscription from '../models/subscription';
 import SubscriptionPlan from '../models/subscriptionPlan';
 import { validationResult } from 'express-validator';
 import {
@@ -327,7 +326,7 @@ export const oneTimePayment: RequestHandler = async (
                 cancel_url: `${req.user?.originPath || req.headers.origin}/payment-cancel`,
             });
         if (session.id) {
-            const newSubscription = new useSubscription({});
+            // const newSubscription = new useSubscription({});
         }
         res.json({ id: session.id });
     } catch (error: unknown) {
