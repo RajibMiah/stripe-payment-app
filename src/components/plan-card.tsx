@@ -19,50 +19,42 @@ const PlanCard: React.FC<PlanCardProps> = ({
     return (
         <div
             className="
-                flex justify-center items-start flex-col
-                border-2 border-purple-300 rounded-md
-                w-full sm:w-[18rem] md:w-[20rem] lg:w-[19rem]
-                py-4 sm:py-5 md:py-6 px-4 sm:px-6 md:px-8 lg:px-8"
+                flex flex-col items-start border-2 border-purple-300 rounded-md
+                w-full sm:w-[18rem] md:w-[20rem] lg:w-[19rem] p-6 gap-4 bg-white shadow-md"
         >
             {/* Plan Title */}
-            <div className="text-base font-semibold py-2">
-                <span>{title}</span>
+            <h3 className="text-lg font-semibold">{title}</h3>
+
+            {/* Plan Details */}
+            <div className="flex flex-col">
+                <span className="text-2xl font-bold py-1">{price}</span>
+                <p className="text-sm text-gray-700">{description}</p>
             </div>
 
-            {/* Plan Details (Price and Description) */}
-            <div className="flex justify-center text-start flex-col gap-4">
-                <div className="flex justify-center text-start flex-col">
-                    <span className="text-xl font-semibold py-2">{price}</span>
-                    <span className="w-full text-sm">{description}</span>
-                </div>
+            {/* Get Started Button */}
+            <button
+                onClick={handleOnClick}
+                className="w-full bg-black text-white rounded-lg py-2 text-sm font-medium
+                           transition-all duration-300 hover:bg-purple-700"
+                aria-label={`Subscribe to ${title}`}
+            >
+                Get Started
+            </button>
 
-                {/* Get Started Button */}
-                <div className="flex items-center justify-center px-4">
-                    <button
-                        onClick={handleOnClick}
-                        className="w-full bg-black text-white rounded-lg p-1 text-sm"
+            {/* Features List */}
+            <ul className="flex flex-col gap-2 mt-2">
+                {features.map((feature, index) => (
+                    <li
+                        key={index}
+                        className="flex items-center gap-2 text-sm text-gray-800"
                     >
-                        Get Started
-                    </button>
-                </div>
-
-                {/* Features List */}
-                <div>
-                    <ul className="flex flex-col gap-1">
-                        {features.map((feature, index) => (
-                            <li
-                                key={index}
-                                className="flex items-center gap-3 text-sm"
-                            >
-                                <div className="rounded-full bg-black w-4 h-4 flex items-center justify-center">
-                                    <CheckIcon className="text-white w-3 h-3" />
-                                </div>
-                                <span>{feature}</span>
-                            </li>
-                        ))}
-                    </ul>
-                </div>
-            </div>
+                        <div className="rounded-full bg-black w-5 h-5 flex items-center justify-center">
+                            <CheckIcon className="text-white w-4 h-4" />
+                        </div>
+                        <span>{feature}</span>
+                    </li>
+                ))}
+            </ul>
         </div>
     );
 };

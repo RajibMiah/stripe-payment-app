@@ -10,7 +10,7 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string, {
     apiVersion: '2024-12-18.acacia',
 });
 
-export const captureMonthlyPanddingFees = async (
+export const captureMonthlyPendingFees = async (
     customer_id: string,
     user_id: string,
     user_name: string,

@@ -1,23 +1,28 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { oneTimePayment } from '@redux/thunks/checkoutThunk';
+
 interface CheckoutState {
     loading: boolean;
     error: string | null;
     paymentSuccess: boolean;
+    stripePriceId: string | null;
 }
 
 const initialState: CheckoutState = {
     loading: false,
     error: null,
     paymentSuccess: false,
+    stripePriceId: null,
 };
 
 const checkoutSlice = createSlice({
     name: 'checkout',
     initialState,
     reducers: {
-        // You can keep these if you need to manually dispatch them
+        setStripePriceId: (state, action: PayloadAction<string>) => {
+            state.stripePriceId = action.payload;
+        },
         initiatePayment: (state) => {
             state.loading = true;
             state.error = null;
@@ -53,7 +58,11 @@ const checkoutSlice = createSlice({
     },
 });
 
-export const { initiatePayment, paymentSuccess, paymentFailure } =
-    checkoutSlice.actions;
+export const {
+    initiatePayment,
+    paymentSuccess,
+    paymentFailure,
+    setStripePriceId,
+} = checkoutSlice.actions;
 
 export default checkoutSlice.reducer;

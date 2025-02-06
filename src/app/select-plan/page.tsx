@@ -2,60 +2,22 @@
 'use client';
 
 import PlanCard from '@components/plan-card';
+import { useRouter } from 'next/navigation';
 import { useDispatch } from 'react-redux';
 import { AppDispatch } from '@redux/store';
-import { oneTimePayment } from '@redux/thunks/checkoutThunk';
-import { loadStripe } from '@stripe/stripe-js';
 
-const stripePromise = loadStripe(
-    process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
-);
+import { setStripePriceId } from '@redux/slices/checkoutSlice';
+import { plansData } from 'utlities/plans-data';
 
 const SelectPlan = () => {
     const dispatch = useDispatch<AppDispatch>();
+    const router = useRouter();
 
-    // Handles redirecting to Stripe checkout
-    const handleStripeRedirect = async (id: string) => {
-        console.log('Redirecting to checkout with session ID:', id);
-        const stripe = await stripePromise;
-
-        const { error } = await stripe.redirectToCheckout({
-            sessionId: id,
-        });
-
-        if (error) {
-            console.error('Error redirecting to checkout:', error);
-            alert(
-                'There was an error with the payment process. Please try again.'
-            );
-        }
+    const handleCheckout = async (price_id: string) => {
+        console.log('stripe price id', price_id);
+        dispatch(setStripePriceId(price_id));
+        router.push('/checkout');
     };
-
-    // Handles payment submission
-    const onTimePayment = async (planId: string) => {
-        console.log('plan Id', planId);
-        try {
-            const res = await dispatch(
-                oneTimePayment({
-                    items: [
-                        { id: 1, quantity: 3 },
-                        { id: 2, quantity: 1 },
-                    ],
-                })
-            );
-
-            if (res.meta.requestStatus === 'rejected') {
-                alert('Payment failed: ' + res.payload);
-            } else {
-                const { id } = res.payload;
-                handleStripeRedirect(id);
-            }
-        } catch (err: any) {
-            console.error('Payment error:', err);
-            alert('Payment failed: ' + err.message);
-        }
-    };
-
     return (
         <div className="flex justify-center h-full py-20 gap-10">
             <div className="w-full max-w-7xl">
@@ -84,57 +46,20 @@ const SelectPlan = () => {
                 </div>
 
                 {/* Plan Cards Section */}
-                <div className="flex flex-col gap-4 items-center sm:gap-5 md:gap-6 lg:gap-7 xl:flex-row lg:justify-around xl:justify-around xl:gap-8">
-                    {/* Basic Plan Card */}
-                    <div className="flex justify-center items-center">
+
+                <div className="flex flex-col gap-6 items-center sm:gap-7 md:gap-8 lg:flex-row lg:justify-center xl:gap-10">
+                    {plansData.map((plan) => (
                         <PlanCard
-                            title="Basic"
-                            price="$15 /month"
-                            handleOnClick={() => onTimePayment('basic-plan')}
-                            description="Perfect for growing business and freelancers."
-                            features={[
-                                'Advanced Analytics',
-                                'Client Collaboration Excellence',
-                                'Priority Support',
-                                'Enhanced Productivity Tools',
-                                'Task Automation',
-                            ]}
-                        />
-                    </div>
-                    {/* Professional Plan Card */}
-                    <div className="flex justify-center items-center">
-                        <PlanCard
-                            title="Professional"
-                            price="$30 /month"
+                            key={plan.planId}
+                            title={plan.title}
+                            price={plan.price}
+                            description={plan.description}
+                            features={plan.features}
                             handleOnClick={() =>
-                                onTimePayment('professional-plan')
+                                handleCheckout(plan.stripe_price_id)
                             }
-                            description="Perfect for growing businesses and freelancers."
-                            features={[
-                                'Advanced Analytics',
-                                'Client Collaboration Excellence',
-                                'Priority Support',
-                                'Enhanced Productivity Tools',
-                                'Task Automation',
-                            ]}
                         />
-                    </div>
-                    {/* Business Plan Card */}
-                    <div className="flex justify-center items-center">
-                        <PlanCard
-                            title="Free Trial"
-                            price="$49 /month"
-                            handleOnClick={() => onTimePayment('free-trial')}
-                            description="Perfect for growing businesses and freelancers."
-                            features={[
-                                'Advanced Analytics',
-                                'Client Collaboration Excellence',
-                                'Priority Support',
-                                'Enhanced Productivity Tools',
-                                'Task Automation',
-                            ]}
-                        />
-                    </div>
+                    ))}
                 </div>
             </div>
         </div>
