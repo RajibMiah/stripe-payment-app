@@ -47,7 +47,7 @@ const SelectPlan = () => {
 
                 {/* Plan Cards Section */}
 
-                <div className="flex flex-col gap-6 items-center sm:gap-7 md:gap-8 lg:flex-row lg:justify-center xl:gap-10">
+                <div className="flex flex-col gap-6 items-center sm:gap-7 md:gap-8 lg:flex-row lg:justify-center xl:gap-4 2xl:gap-10">
                     {plansData.map((plan) => (
                         <PlanCard
                             key={plan.planId}
