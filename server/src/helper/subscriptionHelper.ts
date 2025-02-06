@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import Stripe from 'stripe';
 import cardDetails from '../models/cardDetails';
 import dotenv from 'dotenv';

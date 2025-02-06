@@ -24,6 +24,10 @@ import {
     saveCardDetailsHelper,
     validateRequest,
 } from '../helper/create-subscription-helper';
+import {
+    PLAN_HAS_ALLOWED_TRIAL,
+    USER_HAVE_NOT_PURCHESED_PLAN,
+} from '../../constrains/static-values';
 
 // Initialize Stripe with the secret key from environment variables
 dotenv.config();
@@ -136,7 +140,10 @@ export const getPlanDetails: RequestHandler = async (
         let subs_msg: string;
         const planDetailsTyped = planDetails.toObject() as any;
 
-        if (haveBuyedAnyPlan == 0 && planDetailsTyped?.have_trial === true) {
+        if (
+            haveBuyedAnyPlan == USER_HAVE_NOT_PURCHESED_PLAN &&
+            planDetailsTyped?.have_trial === PLAN_HAS_ALLOWED_TRIAL
+        ) {
             subs_msg = `You will get ${planDetailsTyped.trial_days} days trial, and after we will charge you ${planDetailsTyped.amount} for ${planDetailsTyped.name} subscription plan.`;
         } else {
             subs_msg = ` we will charge you ${planDetailsTyped.amount} for ${planDetailsTyped.name} subscription plan.`;
@@ -184,7 +191,8 @@ export const createSubscription: RequestHandler = async (
 
         // Find subscription plan
         const subscriptionPlan = (await findSubscriptionPlan(plan_id)) as any;
-        if (!subscriptionPlan.success) {
+
+        if (subscriptionPlan.success === false) {
             return res.status(400).json(subscriptionPlan);
         }
 
@@ -195,7 +203,8 @@ export const createSubscription: RequestHandler = async (
             email,
             card_data.id
         )) as any;
-        if (!customer.success) {
+
+        if (customer.success == false) {
             return res.status(400).json(customer);
         }
 

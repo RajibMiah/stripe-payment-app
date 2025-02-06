@@ -3,7 +3,7 @@ import mongoose from 'mongoose';
 const cardDetailsSchema = new mongoose.Schema({
     user_id: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'user',
+        ref: 'User',
     },
     card_name: {
         type: String,

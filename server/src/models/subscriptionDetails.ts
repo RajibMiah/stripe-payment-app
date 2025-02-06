@@ -4,7 +4,7 @@ const subscriptionDetailsSchema = new mongoose.Schema(
     {
         user_id: {
             type: mongoose.Schema.Types.ObjectId,
-            ref: 'user',
+            ref: 'User',
         },
         stripe_subscription_id: {
             type: String,

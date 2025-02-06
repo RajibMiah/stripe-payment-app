@@ -23,8 +23,8 @@ const subscriptionPlanSchema = new mongoose.Schema(
             required: true,
         },
         type: {
-            //0-> monthly , 1-> Tearly , 2-> Lifetime
-            type: Number,
+            type: String,
+            enum: ['Monthly', 'Yearly', 'LifeTime'],
             required: true,
         },
     },

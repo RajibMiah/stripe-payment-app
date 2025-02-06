@@ -1,12 +1,11 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { validationResult } from 'express-validator';
 import { Request } from 'express';
-import Stripe from 'stripe';
+
 import { convertFullName } from '../utilites/user';
-import { UserJwtToken } from '../types/user';
 import SubscriptionPlan from '../models/subscriptionPlan';
 import {
     CardDetails,
-    CreateSubscriptionRequestBody,
     SubscriptionPlanType,
     subscriptionTypeFunctions,
 } from '../types/subscription';
@@ -88,19 +87,25 @@ export const countUserSubscriptions = async (userId: string) => {
 
 interface TransitionCondition {
     plan_interval: string;
-    subscription_type: number;
+    subscription_type: string;
 }
 
 const transitionMapping: { [key: string]: TransitionCondition } = {
-    monthlyToYearly: { plan_interval: 'month', subscription_type: 1 },
-    monthlyToLifetime: { plan_interval: 'year', subscription_type: 2 },
-    yearlyToMonthly: { plan_interval: 'year', subscription_type: 0 },
-    yearlyToLifetime: { plan_interval: 'month', subscription_type: 2 },
+    monthlyToYearly: { plan_interval: 'Monthly', subscription_type: 'Yearly' },
+    monthlyToLifetime: {
+        plan_interval: 'Yearly',
+        subscription_type: 'LifeTime',
+    },
+    yearlyToMonthly: { plan_interval: 'Yearly', subscription_type: 'Monthly' },
+    yearlyToLifetime: {
+        plan_interval: 'Monthly',
+        subscription_type: 'Lifetime',
+    },
 };
 
 export const handleSubscriptionTransition = (
     activeSubscription: any,
-    subscriptionPlan: any
+    subscriptionPlan: SubscriptionPlanType
 ) => {
     if (!activeSubscription) {
         return 'newSubscription';
@@ -120,7 +125,13 @@ export const handleSubscriptionTransition = (
     return 'newSubscription';
 };
 
-const transitionHandlers: { [key: string]: Function } = {
+const transitionHandlers: {
+    [key: string]: (
+        customerId: string,
+        userId: string,
+        subscriptionPlan: SubscriptionPlanType
+    ) => Promise<any>;
+} = {
     newSubscription: async (
         customerId: string,
         userId: string,
@@ -186,9 +197,6 @@ const transitionHandlers: { [key: string]: Function } = {
         );
     },
 };
-
-
-
 
 export const createSubscriptionHelper = async (
     customerId: string,

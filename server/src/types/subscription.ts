@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import {
     lifetimeTrialSubscription,
     monthlyTrialSubscription,
@@ -19,7 +20,7 @@ export interface SubscriptionPlanType {
     trial_days: number;
     have_trial: boolean;
     amount: number;
-    type: number;
+    type: string;
 }
 
 export interface CardDetails {
@@ -52,7 +53,7 @@ export const subscriptionTypeFunctions: {
     [key: number]: (
         customer_id: string,
         user_id: string,
-        subscriptionPlan: any
+        subscriptionPlan: SubscriptionPlanType
     ) => any;
 } = {
     0: monthlyTrialSubscription,
