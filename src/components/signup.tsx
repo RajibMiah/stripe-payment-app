@@ -1,47 +1,10 @@
-import { useState } from 'react';
-import { useDispatch } from 'react-redux';
-import { AppDispatch } from '@redux/store';
-import { signup } from '@redux/thunks/authThunk';
+import useSignupForm from '@hooks/useSignupForm';
 
 interface SignupProps {
     toggleModal: () => void;
 }
 const Signup: React.FC<SignupProps> = ({ toggleModal }) => {
-    const dispatch = useDispatch<AppDispatch>();
-
-    const [formData, setFormData] = useState({
-        firstName: '',
-        lastName: '',
-        email: '',
-        password: '',
-    });
-
-    const handleSignup = async (e: React.FormEvent) => {
-        e.preventDefault();
-        for (const key in formData) {
-            if (!formData[key]) {
-                return alert('Please fill all fields');
-            }
-        }
-        try {
-            const res = await dispatch(signup(formData));
-            if (res.meta.requestStatus === 'rejected') {
-                alert('Signup failed: ' + res.payload);
-            } else {
-                alert('Signup successfull');
-            }
-        } catch (error) {
-            alert('Signup failed: ' + error.message);
-        }
-    };
-
-    const handleFormChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setFormData({
-            ...formData,
-            [e.target.name]: e.target.value,
-        });
-    };
-
+    const { handleFormChange, handleSignup } = useSignupForm(toggleModal);
     return (
         <div>
             <div className="fixed inset-0 flex items-center justify-center z-50">

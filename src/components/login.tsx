@@ -26,6 +26,7 @@ const Login: React.FC<any> = ({ toggleModal }) => {
                 alert('Login failed: ' + res.payload);
             } else {
                 alert('Login successfull');
+                toggleModal();
             }
         } catch (error) {
             alert('Login failed: ' + error.message);

@@ -21,7 +21,7 @@ export const signup = createAsyncThunk<AuthResponse, AuthPayload>(
     async (payload, { rejectWithValue }) => {
         try {
             const response = await axios.post(
-                `${process.env.NEXT_PUBLIC_BACKEND_API_URL}/api/auth/register`,
+                `${process.env.NEXT_PUBLIC_BACKEND_API_URL}/api/v1/auth/register`,
                 payload,
                 {
                     headers: {
@@ -42,7 +42,7 @@ export const login = createAsyncThunk<AuthResponse, AuthPayload>(
     async (payload, { rejectWithValue }) => {
         try {
             const response = await axios.post(
-                `${process.env.NEXT_PUBLIC_BACKEND_API_URL}/api/auth/login`,
+                `${process.env.NEXT_PUBLIC_BACKEND_API_URL}/api/v1/auth/login`,
                 payload
             );
             return response.data;
