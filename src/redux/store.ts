@@ -8,7 +8,7 @@ import storage from 'redux-persist/lib/storage';
 const persistConfig = {
     key: 'root',
     storage,
-    whitelist: ['checkout'], // Add only serializable reducers here
+    whitelist: ['auth', 'checkout'], // Add only serializable reducers here
 };
 
 const rootReducer = combineReducers({

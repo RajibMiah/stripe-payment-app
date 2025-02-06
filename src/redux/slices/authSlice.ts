@@ -1,13 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { User } from '../types/authTypes';
+import { AuthState } from '../types/authTypes';
 import { login, signup } from 'redux/thunks/authThunk';
-
-interface AuthState {
-    isAuthenticated: boolean;
-    user: User | null;
-    isLoading: boolean;
-}
 
 const initialState: AuthState = {
     isAuthenticated: false,

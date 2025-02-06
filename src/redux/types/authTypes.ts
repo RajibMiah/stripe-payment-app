@@ -1,13 +1,14 @@
-export interface AuthState {
-    isAuthenticated: boolean;
-    user: { id: string; name: string } | null;
-    isLoading: boolean;
-}
+// Removed duplicate AuthState interface
 
 export interface User {
     id: string;
     name: string;
     email: string;
+}
+export interface AuthState {
+    isAuthenticated: boolean;
+    user: User | null;
+    isLoading: boolean;
 }
 
 export interface AuthLoginPayload {

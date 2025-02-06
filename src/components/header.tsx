@@ -1,7 +1,11 @@
 'use client';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { useDispatch, useSelector } from 'react-redux';
+
+import { RootState } from '@redux/store';
+import { logout } from '@redux/slices/authSlice';
 
 interface HeaderProps {
     signupToogle: () => void;
@@ -9,11 +13,18 @@ interface HeaderProps {
 }
 
 const Header = ({ loginToggle, signupToogle }: HeaderProps) => {
+    const dispatch = useDispatch();
     const [isMenuOpen, setIsMenuOpen] = useState(false); // State to toggle the mobile menu
+
+    const { isAuthenticated } = useSelector((state: RootState) => state.auth);
 
     // Toggle the mobile menu
     const toggleMenu = () => {
         setIsMenuOpen(!isMenuOpen);
+    };
+
+    const handleLogout = () => {
+        dispatch(logout());
     };
 
     return (
@@ -51,17 +62,33 @@ const Header = ({ loginToggle, signupToogle }: HeaderProps) => {
 
                     {/* Auth Buttons (Large Screens) */}
                     <div className="hidden lg:flex justify-center items-center gap-8">
-                        <button className="mouse-pointer" onClick={loginToggle}>
-                            <span className="hover:text-gray-700 mouse-pointer">
-                                Login
-                            </span>
-                        </button>
-                        <button
-                            className="bg-purple-500 text-white px-4 py-2 rounded mouse-pointer"
-                            onClick={signupToogle}
-                        >
-                            Sign Up
-                        </button>
+                        {!isAuthenticated && (
+                            <>
+                                <button
+                                    className="mouse-pointer"
+                                    onClick={loginToggle}
+                                >
+                                    <span className="hover:text-gray-700 mouse-pointer">
+                                        Login
+                                    </span>
+                                </button>
+                                <button
+                                    className="bg-purple-500 text-white px-4 py-2 rounded mouse-pointer"
+                                    onClick={signupToogle}
+                                >
+                                    Sign Up
+                                </button>
+                            </>
+                        )}
+
+                        {isAuthenticated && (
+                            <button
+                                className="bg-purple-500 text-white px-4 py-2 rounded mouse-pointer"
+                                onClick={handleLogout}
+                            >
+                                Logout
+                            </button>
+                        )}
                     </div>
 
                     {/* Hamburger Menu Icon (Mobile and Tablet) */}
@@ -90,15 +117,30 @@ const Header = ({ loginToggle, signupToogle }: HeaderProps) => {
                         <Link href="/" passHref>
                             <span className="hover:text-gray-300">Contact</span>
                         </Link>
-                        <button onClick={loginToggle}>
-                            <span className="hover:text-gray-300">Login</span>
-                        </button>
-                        <button
-                            className="bg-blue-500 text-white px-4 py-2 rounded mouse-pointer"
-                            onClick={signupToogle}
-                        >
-                            Sign Up
-                        </button>
+
+                        {!isAuthenticated && (
+                            <>
+                                <button onClick={loginToggle}>
+                                    <span className="hover:text-gray-300">
+                                        Login
+                                    </span>
+                                </button>
+                                <button
+                                    className="bg-blue-500 text-white px-4 py-2 rounded mouse-pointer"
+                                    onClick={signupToogle}
+                                >
+                                    Sign Up
+                                </button>
+                            </>
+                        )}
+                        {isAuthenticated && (
+                            <button
+                                className="bg-blue-500 text-white px-4 py-2 rounded mouse-pointer"
+                                onClick={handleLogout}
+                            >
+                                Logout
+                            </button>
+                        )}
                     </div>
                 )}
             </div>
