@@ -41,9 +41,10 @@ router.post(
     createSubscriptionValidator,
     createSubscription
 );
-router.post('/create-checkout-session', authMiddleware, subscription);
-router.post('/create-one-time-payment', authMiddleware, oneTimePayment);
-router.post('/create-trial-subscription', authMiddleware, trialSubscription);
+
+// router.post('/create-checkout-session', authMiddleware, subscription);
+// router.post('/create-one-time-payment', authMiddleware, oneTimePayment);
+// router.post('/create-trial-subscription', authMiddleware, trialSubscription);
 
 // Export the router to be used in the main application
 export default router;
